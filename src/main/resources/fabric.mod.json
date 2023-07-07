@@ -1,26 +1,25 @@
 {
   "schemaVersion": 1,
-  "id": "armor_hud",
+  "id": "ukus-armor-hud",
   "version": "${version}",
-  "name": "BerdinskiyBear's ArmorHUD",
+  "name": "uku's ArmorHUD",
   "description": "This mod adds a minimalistic vanilla-like widget that shows your armor items and a warning if durability is low enough.",
   "authors": [
-    "BerdinskiyBear"
+    "BerdinskiyBear",
+    "uku"
   ],
   "contributors": [],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/berdinskiybears-armor-hud",
-    "issues": "https://github.com/BerdinskiyBear/armor-hud/issues"
+    "homepage": "https://github.com/uku3lig/armor-hud",
+    "issues": "https://github.com/uku3lig/armor-hud/issues"
   },
   "license": "MIT",
   "icon": "assets/armor_hud/icon.png",
   "environment": "client",
   "entrypoints": {
-    "main": [],
     "client": [
       "ru.berdinskiybear.armorhud.ArmorHudModEntrypoint"
     ],
-    "server": [],
     "modmenu": [
       "ru.berdinskiybear.armorhud.config.ArmorHudModmenuIntegration"
     ]
@@ -29,13 +28,15 @@
     "armor_hud.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.18",
-    "minecraft": "~1.20",
-    "java": ">=17"
+    "fabricloader": ">=0.13",
+    "minecraft": ">=1.20"
   },
   "recommends": {
     "fabric-resource-loader-v0": "*",
     "cloth-config2": ">=11.0.99",
     "modmenu": ">=7.1"
+  },
+  "breaks": {
+    "armor_hud": "*"
   }
 }
