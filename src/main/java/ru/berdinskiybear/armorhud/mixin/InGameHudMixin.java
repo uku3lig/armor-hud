@@ -70,7 +70,7 @@ public abstract class InGameHudMixin {
         this.client.getProfiler().push("armorHud");
 
         // getting current config
-        ArmorHudConfig currentArmorHudConfig = this.armorHud_getCurrentArmorHudConfig();
+        ArmorHudConfig currentArmorHudConfig = ArmorHudMod.getManager().getConfig();
 
         // updating measuring time fields
         {
@@ -243,7 +243,7 @@ public abstract class InGameHudMixin {
                     }
 
                     // here I blend in slot icons if so tells the current config
-                    if (currentArmorHudConfig.getIconsShown()) {
+                    if (currentArmorHudConfig.isIconsShown()) {
                         if (currentArmorHudConfig.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY && (amount > 0 || currentArmorHudConfig.getWidgetShown() == ArmorHudConfig.WidgetShown.ALWAYS)) {
                             context.getMatrices().push();
                             context.getMatrices().translate(0, 0, -90);
@@ -313,7 +313,7 @@ public abstract class InGameHudMixin {
         }
 
         // we want progress updated only when we want icons to move, that is if game is not paused or config screen is open
-        if (!this.client.isPaused() || currentArmorHudConfig.isPreview()) {
+        if (!this.client.isPaused()) {
             armorHud_cycleProgress[index] += (armorHud_measuredTime - armorHud_lastMeasuredTime) / currentArmorHudConfig.getWarningIconBobbingIntervalMs();
             armorHud_cycleProgress[index] %= 1.0F;
 
@@ -325,20 +325,10 @@ public abstract class InGameHudMixin {
         return armorHud_cycleProgress[index];
     }
 
-    /**
-     * This function determines which config is supposed to be current. Usually the loaded config is considered current
-     * but if config screen is open then the preview config is used as current.
-     *
-     * @return Current config
-     */
-    private ArmorHudConfig armorHud_getCurrentArmorHudConfig() {
-        return this.client.currentScreen != null && this.client.currentScreen.getTitle() == ArmorHudMod.CONFIG_SCREEN_NAME ? ArmorHudMod.previewConfig : ArmorHudMod.getCurrentConfig();
-    }
-
     @Inject(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;", shift = At.Shift.BY, by = 2))
     public void calculateStatusEffectIconsOffset(DrawContext context, CallbackInfo ci) {
-        ArmorHudConfig currentConfig = this.armorHud_getCurrentArmorHudConfig();
-        if (currentConfig.isEnabled() && currentConfig.getPushStatusEffectIcons()) {
+        ArmorHudConfig currentConfig = ArmorHudMod.getManager().getConfig();
+        if (currentConfig.isEnabled() && currentConfig.isPushStatusEffectIcons()) {
             int add = 0;
             if (currentConfig.getAnchor() == ArmorHudConfig.Anchor.TOP && currentConfig.getSide() == ArmorHudConfig.Side.RIGHT) {
                 int amount = 0;

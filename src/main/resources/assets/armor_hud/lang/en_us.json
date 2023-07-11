@@ -1,55 +1,20 @@
 {
-  "armorHud.configScreen.title": "BerdinskiyBear's Armor HUD mod config",
-  "armorHud.configScreen.category": "Category",
-
-  "armorHud.configScreen.setting.enable.name": "Enabled",
-  "armorHud.configScreen.setting.enable.description": "Master switch for this mod.",
-
-  "armorHud.configScreen.setting.anchor.name": "Anchored at",
-  "armorHud.configScreen.setting.anchor.description": "Place that the HUD widget is attached to.\n%1$s - widget is placed at the top in the middle.\n%2$s - widget is placed at the upper corner on the preferred side.\n%3$s - widget is placed at the bottom corner on the preferred side.\n%4$s - widget is placed to the side from your hotbar.",
-
-  "armorHud.configScreen.setting.side.name": "Side",
-  "armorHud.configScreen.setting.side.description": "Side on which widget is shown.\nIf widget is anchored at the top in the middle this setting does nothing.",
-
-  "armorHud.configScreen.setting.offhandSlot.name": "Offhand slot behaviour",
-  "armorHud.configScreen.setting.offhandSlot.description": "This setting defines the way widget reacts to offhand slot and attack indicator if it is at the hotbar.\n%1$s - widget never moves away to make space for hotbar or attack indicator.\n%2$s - widget moves away when offhand slot is shown or attack indicator is at hotbar.\n%3$s - widget always leaves space for the offhand slot even if it is not shown.\nSetting does nothing unless widget is anchored at the hotbar.",
-
-  "armorHud.configScreen.setting.pushBossbars.name": "Push bossbar",
-  "armorHud.configScreen.setting.pushBossbars.description": "If widget is at the top in the middle bossbars will be pushed down by the widget.",
-
-  "armorHud.configScreen.setting.pushStatusEffectIcons.name": "Push effect icons",
-  "armorHud.configScreen.setting.pushStatusEffectIcons.description": "If widget is at the top right corner effect icons will be pushed down by the widget.",
-
-  "armorHud.configScreen.setting.pushSubtitles.name": "Push subtitles",
-  "armorHud.configScreen.setting.pushSubtitles.description": "If widget is at the bottom right corner subtitles will be pushed up by the widget.",
-
-  "armorHud.configScreen.setting.offsetX.name": "X offset",
-  "armorHud.configScreen.setting.offsetX.description": "Offsets widget position on a horizontal axis. Positive numbers moves away from anchor point, negative numbers move widget onto the anchor point.",
-
-  "armorHud.configScreen.setting.offsetY.name": "Y offset",
-  "armorHud.configScreen.setting.offsetY.description": "Offsets widget position on a vertical axis, otherwise the same as X offset.",
-
-  "armorHud.configScreen.setting.widgetShown.name": "Widget shown",
-  "armorHud.configScreen.setting.widgetShown.description": "This setting defines when slots of the HUD widget are shown.\n%1$s - slots are always shown.\n%2$s - all slots are shown if at least one of the armor slots is not empty.\n%3$s - only not empty slots are shown.",
-
-  "armorHud.configScreen.setting.reversed.name": "Reverse order of armor items",
-  "armorHud.configScreen.setting.reversed.description": "Reverses order of armor items in the slots of the widget.",
-
-  "armorHud.configScreen.setting.iconsShown.name": "Show empty slot icons",
-  "armorHud.configScreen.setting.iconsShown.description": "Shows special icons in empty slots.",
-
-  "armorHud.configScreen.setting.warningShown.name": "Show low durability warning",
-  "armorHud.configScreen.setting.warningShown.description": "If enabled, a small warning will appear at the slot of the item with low durability.",
-
-  "armorHud.configScreen.setting.minDurabilityValue.name": "Minimum durability value",
-  "armorHud.configScreen.setting.minDurabilityValue.description": "If durability value of a displayed item is equal or lower than this setting, a warning can be shown.",
-
-  "armorHud.configScreen.setting.minDurabilityPercentage.name": "Minimum durability percentage",
-  "armorHud.configScreen.setting.minDurabilityPercentage.description": "If durability of a displayed item is equal or below this percentage, a warning can be shown.",
-
-  "armorHud.configScreen.setting.warningIconBobbingIntervalEntry.name": "Warning icon bobbing period",
-  "armorHud.configScreen.setting.warningIconBobbingIntervalEntry.description": "This parameter defines how quickly warning icon will move up and down when shown. Lower the number quicker the motion. Set to 0 if you want to disable bobbing.",
-
-  "armorHud.configScreen.setting.style.name": "Widget slot style",
-  "armorHud.configScreen.setting.style.description": "Widget slot style defines how slots are drawn on the screen. If widget slots look weird (for example, parts of texture do not match) with your resource pack you should try different styles to find ones that work and choose one that you prefer."
+  "armorhud.config": "uku's Armor Hud config",
+  "armorhud.option.enabled": "Enabled",
+  "armorhud.option.anchor": "Anchor",
+  "armorhud.option.side": "Side",
+  "armorhud.option.offsetX": "X Offset",
+  "armorhud.option.offsetY": "Y Offset",
+  "armorhud.option.style": "Style",
+  "armorhud.option.widgetShown": "Show Widget",
+  "armorhud.option.offhandSlotBehavior": "Offhand Slot",
+  "armorhud.option.pushBossbars": "Push Bossbars",
+  "armorhud.option.pushIcons": "Push Effect Icons",
+  "armorhud.option.pushSubtitles": "Push Subtitles",
+  "armorhud.option.reversed": "Reversed",
+  "armorhud.option.showIcons": "Show Icons",
+  "armorhud.option.showWarning": "Show Warning",
+  "armorhud.option.minDuraValue": "Min Durability",
+  "armorhud.option.minDuraPercent": "Min Durability",
+  "armorhud.option.iconBobInterval": "Icon Bob Interval"
 }

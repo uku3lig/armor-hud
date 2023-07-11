@@ -23,8 +23,8 @@ public class BossBarHudMixin {
 
     @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 1)
     public int anInt(int a) {
-        ArmorHudConfig currentConfig = this.armorHud_getCurrentArmorHudConfig();
-        if (currentConfig.isEnabled() && currentConfig.getPushBossbars()) {
+        ArmorHudConfig currentConfig = ArmorHudMod.getManager().getConfig();
+        if (currentConfig.isEnabled() && currentConfig.isPushBossbars()) {
             int add = 0;
             if (currentConfig.getAnchor() == ArmorHudConfig.Anchor.TOP_CENTER) {
                 int amount = 0;
@@ -59,16 +59,6 @@ public class BossBarHudMixin {
             return a + Math.max(add, 0);
         } else
             return a;
-    }
-
-    /**
-     * This function determines which config is supposed to be current. Usually the loaded config is considered current
-     * but if config screen is open then the preview config is used as current.
-     *
-     * @return Current config
-     */
-    private ArmorHudConfig armorHud_getCurrentArmorHudConfig() {
-        return this.client.currentScreen != null && this.client.currentScreen.getTitle() == ArmorHudMod.CONFIG_SCREEN_NAME ? ArmorHudMod.previewConfig : ArmorHudMod.getCurrentConfig();
     }
 
     private PlayerEntity getCameraPlayer() {

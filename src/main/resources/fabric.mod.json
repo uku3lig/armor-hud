@@ -17,11 +17,8 @@
   "icon": "assets/armor_hud/icon.png",
   "environment": "client",
   "entrypoints": {
-    "client": [
-      "ru.berdinskiybear.armorhud.ArmorHudModEntrypoint"
-    ],
-    "modmenu": [
-      "ru.berdinskiybear.armorhud.config.ArmorHudModmenuIntegration"
+    "ukulib": [
+      "ru.berdinskiybear.armorhud.config.UkulibIntegration"
     ]
   },
   "mixins": [

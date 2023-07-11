@@ -1,6 +1,8 @@
 package ru.berdinskiybear.armorhud;
 
+import lombok.Getter;
 import net.minecraft.text.Text;
+import net.uku3lig.ukulib.config.ConfigManager;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,26 +19,8 @@ public final class ArmorHudMod {
 
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
 
-    public static ArmorHudConfig.MutableConfig temporaryConfig;
-    public static ArmorHudConfig.MutableConfig previewConfig = new ArmorHudConfig.MutableConfig();
-
-    private static ArmorHudConfig currentConfig;
-
-    public static ArmorHudConfig getCurrentConfig() {
-        return currentConfig;
-    }
-
-    public static void setCurrentConfig(ArmorHudConfig currentConfig) {
-        ArmorHudMod.currentConfig = currentConfig;
-    }
-
-    public static void writeCurrentConfig() {
-        ArmorHudConfig.writeConfigFile(ArmorHudMod.getCurrentConfig());
-    }
-
-    public static void readCurrentConfig() {
-        ArmorHudMod.setCurrentConfig(ArmorHudConfig.readConfigFile());
-    }
+    @Getter
+    private static final ConfigManager<ArmorHudConfig> manager = ConfigManager.createDefault(ArmorHudConfig.class, "ukus-armor-hud");
 
     public static void log(String message) {
         log(Level.INFO, message);

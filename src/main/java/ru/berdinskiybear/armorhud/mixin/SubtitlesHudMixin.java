@@ -27,8 +27,8 @@ public class SubtitlesHudMixin {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Ljava/lang/String;)I", ordinal = 3, shift = At.Shift.BY, by = 4))
     public void calculateOffset(DrawContext context, CallbackInfo ci) {
-        ArmorHudConfig currentConfig = this.armorHud_getCurrentArmorHudConfig();
-        if (currentConfig.isEnabled() && currentConfig.getPushSubtitles()) {
+        ArmorHudConfig currentConfig = ArmorHudMod.getManager().getConfig();
+        if (currentConfig.isEnabled() && currentConfig.isPushSubtitles()) {
             int add = 0;
             if (currentConfig.getAnchor() == ArmorHudConfig.Anchor.BOTTOM && currentConfig.getSide() == ArmorHudConfig.Side.RIGHT) {
                 int amount = 0;
@@ -68,16 +68,6 @@ public class SubtitlesHudMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V", shift = At.Shift.AFTER))
     public void offset(DrawContext context, CallbackInfo ci) {
         context.getMatrices().translate(0.0F, -((float) this.offset), 0.0F);
-    }
-
-    /**
-     * This function determines which config is supposed to be current. Usually the loaded config is considered current
-     * but if config screen is open then the preview config is used as current.
-     *
-     * @return Current config
-     */
-    private ArmorHudConfig armorHud_getCurrentArmorHudConfig() {
-        return this.client.currentScreen != null && this.client.currentScreen.getTitle() == ArmorHudMod.CONFIG_SCREEN_NAME ? ArmorHudMod.previewConfig : ArmorHudMod.getCurrentConfig();
     }
 
     private PlayerEntity getCameraPlayer() {
