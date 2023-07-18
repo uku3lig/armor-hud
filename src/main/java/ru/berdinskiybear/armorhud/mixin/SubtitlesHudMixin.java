@@ -1,13 +1,10 @@
 package ru.berdinskiybear.armorhud.mixin;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.SubtitlesHud;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,8 +16,6 @@ import java.util.List;
 
 @Mixin(SubtitlesHud.class)
 public class SubtitlesHudMixin {
-    @Shadow @Final private MinecraftClient client;
-
     @Unique
     private int offset = 0;
 
@@ -31,7 +26,7 @@ public class SubtitlesHudMixin {
         if (!config.isEnabled() || !config.isPushSubtitles() || config.getAnchor() != ArmorHudConfig.Anchor.BOTTOM
                 || config.getSide() != ArmorHudConfig.Side.RIGHT) return;
 
-        ClientPlayerEntity player = this.client.player;
+        PlayerEntity player = ArmorHudMod.getCameraPlayer();
         if (player == null) return;
 
         List<ItemStack> armorItems = player.getInventory().armor.stream().filter(s -> !s.isEmpty()).toList();
