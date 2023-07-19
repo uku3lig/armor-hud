@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.minecraft.util.Arm;
+import net.minecraft.util.TranslatableOption;
 
 import java.io.Serializable;
 
@@ -31,57 +32,67 @@ public class ArmorHudConfig implements Serializable {
     private double minDurabilityPercentage = 0.05;
     private int warningBobIntensity = 3;
 
-    public ArmorHudConfig(ArmorHudConfig original) {
-        this.enabled = original.enabled;
-        this.anchor = original.anchor;
-        this.side = original.side;
-        this.offsetX = original.offsetX;
-        this.offsetY = original.offsetY;
-        this.style = original.style;
-        this.widgetShown = original.widgetShown;
-        this.offhandSlotBehavior = original.offhandSlotBehavior;
-        this.pushBossbars = original.pushBossbars;
-        this.pushStatusEffectIcons = original.pushStatusEffectIcons;
-        this.pushSubtitles = original.pushSubtitles;
-        this.reversed = original.reversed;
-        this.iconsShown = original.iconsShown;
-        this.warningShown = original.warningShown;
-        this.minDurabilityValue = original.minDurabilityValue;
-        this.minDurabilityPercentage = original.minDurabilityPercentage;
-        this.warningBobIntensity = original.warningBobIntensity;
+    @Getter
+    @AllArgsConstructor
+    public enum Anchor implements TranslatableOption {
+        TOP_CENTER(0, "armorhud.option.topCenter"),
+        TOP(1, "armorhud.option.top"),
+        BOTTOM(2, "armorhud.option.bottom"),
+        HOTBAR(3, "armorhud.option.hotbar");
+
+        private final int id;
+        private final String translationKey;
     }
 
-    public enum Anchor {
-        TOP_CENTER,
-        TOP,
-        BOTTOM,
-        HOTBAR
-    }
-
-    public enum Side {
+    public enum Side implements TranslatableOption {
         RIGHT,
         LEFT;
 
         public Arm asArm() {
             return this == LEFT ? Arm.LEFT : Arm.RIGHT;
         }
+
+        @Override
+        public int getId() {
+            return asArm().getId();
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return asArm().getTranslationKey();
+        }
     }
 
-    public enum OffhandSlotBehavior {
-        ALWAYS_IGNORE,
-        ADHERE,
-        ALWAYS_LEAVE_SPACE
+    @Getter
+    @AllArgsConstructor
+    public enum OffhandSlotBehavior implements TranslatableOption {
+        ALWAYS_IGNORE(0, "armorhud.option.alwaysIgnore"),
+        ADHERE(1, "armorhud.option.adhere"),
+        ALWAYS_LEAVE_SPACE(2, "armorhud.option.alwaysLeaveSpace");
+
+        private final int id;
+        private final String translationKey;
     }
 
-    public enum WidgetShown {
-        ALWAYS,
-        IF_ANY_PRESENT,
-        NOT_EMPTY
+    @Getter
+    @AllArgsConstructor
+    public enum WidgetShown implements TranslatableOption {
+        ALWAYS(0, "armorhud.option.always"),
+        IF_ANY_PRESENT(1, "armorhud.option.ifAnyPresent"),
+        NOT_EMPTY(2, "armorhud.option.notEmpty");
+
+        private final int id;
+        private final String translationKey;
     }
 
-    public enum Style {
-        HOTBAR,
-        ROUNDED_CORNERS,
-        ROUNDED
+    @Getter
+    @AllArgsConstructor
+    public enum Style implements TranslatableOption {
+        HOTBAR(0, "armorhud.option.hotbar"),
+        ROUNDED_CORNERS(1, "armorhud.option.roundedCorners"),
+        ROUNDED(2, "armorhud.option.rounded");
+
+        private final int id;
+        private final String translationKey;
     }
 }

@@ -19,13 +19,13 @@ public class ArmorHudConfigScreen extends AbstractConfigScreen<ArmorHudConfig> {
     protected WidgetCreator[] getWidgets(ArmorHudConfig config) {
         return new WidgetCreator[] {
                 CyclingOption.ofBoolean("armorhud.option.enabled", config.isEnabled(), config::setEnabled),
-                CyclingOption.ofEnum("armorhud.option.anchor", ArmorHudConfig.Anchor.class, config.getAnchor(), config::setAnchor),
-                CyclingOption.ofEnum("armorhud.option.side", ArmorHudConfig.Side.class, config.getSide(), config::setSide),
+                CyclingOption.ofTranslatableEnum("armorhud.option.anchor", ArmorHudConfig.Anchor.class, config.getAnchor(), config::setAnchor),
+                CyclingOption.ofTranslatableEnum("armorhud.option.side", ArmorHudConfig.Side.class, config.getSide(), config::setSide),
                 new TypedInputOption<>("armorhud.option.offsetX", String.valueOf(config.getOffsetX()), config::setOffsetX, this::getInt),
                 new TypedInputOption<>("armorhud.option.offsetY", String.valueOf(config.getOffsetY()), config::setOffsetY, this::getInt),
-                CyclingOption.ofEnum("armorhud.option.style", ArmorHudConfig.Style.class, config.getStyle(), config::setStyle),
-                CyclingOption.ofEnum("armorhud.option.widgetShown", ArmorHudConfig.WidgetShown.class, config.getWidgetShown(), config::setWidgetShown),
-                CyclingOption.ofEnum("armorhud.option.offhandSlotBehavior", ArmorHudConfig.OffhandSlotBehavior.class, config.getOffhandSlotBehavior(), config::setOffhandSlotBehavior),
+                CyclingOption.ofTranslatableEnum("armorhud.option.style", ArmorHudConfig.Style.class, config.getStyle(), config::setStyle),
+                CyclingOption.ofTranslatableEnum("armorhud.option.widgetShown", ArmorHudConfig.WidgetShown.class, config.getWidgetShown(), config::setWidgetShown),
+                CyclingOption.ofTranslatableEnum("armorhud.option.offhandSlotBehavior", ArmorHudConfig.OffhandSlotBehavior.class, config.getOffhandSlotBehavior(), config::setOffhandSlotBehavior),
                 CyclingOption.ofBoolean("armorhud.option.pushBossbars", config.isPushBossbars(), config::setPushBossbars),
                 CyclingOption.ofBoolean("armorhud.option.pushIcons", config.isPushStatusEffectIcons(), config::setPushStatusEffectIcons),
                 CyclingOption.ofBoolean("armorhud.option.pushSubtitles", config.isPushSubtitles(), config::setPushSubtitles),
