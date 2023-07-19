@@ -1,7 +1,6 @@
 package ru.berdinskiybear.armorhud.config;
 
 import net.minecraft.client.gui.screen.Screen;
-import net.uku3lig.ukulib.config.ConfigManager;
 import net.uku3lig.ukulib.config.option.CyclingOption;
 import net.uku3lig.ukulib.config.option.SliderOption;
 import net.uku3lig.ukulib.config.option.TypedInputOption;
@@ -35,21 +34,13 @@ public class ArmorHudConfigScreen extends AbstractConfigScreen<ArmorHudConfig> {
                 CyclingOption.ofBoolean("armorhud.option.showWarning", config.isWarningShown(), config::setWarningShown),
                 new TypedInputOption<>("armorhud.option.minDuraValue", String.valueOf(config.getMinDurabilityValue()), config::setMinDurabilityValue, this::getInt),
                 new SliderOption("armorhud.option.minDuraPercent", config.getMinDurabilityPercentage(), config::setMinDurabilityPercentage, SliderOption.PERCENT_VALUE_TO_TEXT),
-                new TypedInputOption<>("armorhud.option.iconBobInterval", String.valueOf(config.getWarningIconBobbingIntervalMs()), config::setWarningIconBobbingIntervalMs, this::getFloat)
+                new TypedInputOption<>("armorhud.option.iconBobInterval", String.valueOf(config.getWarningBobIntensity()), config::setWarningBobIntensity, this::getInt)
         };
     }
 
     private Optional<Integer> getInt(String s) {
         try {
             return Optional.of(Integer.parseInt(s));
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-    }
-
-    private Optional<Float> getFloat(String s) {
-        try {
-            return Optional.of(Float.parseFloat(s));
         } catch (Exception e) {
             return Optional.empty();
         }

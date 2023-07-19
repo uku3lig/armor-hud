@@ -24,6 +24,7 @@
   "mixins": [
     "armor_hud.mixins.json"
   ],
+  "accessWidener": "ukus-armor-hud.accesswidener",
   "depends": {
     "fabricloader": ">=0.13",
     "minecraft": ">=1.20"

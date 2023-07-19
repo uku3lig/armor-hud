@@ -35,7 +35,7 @@ public class SubtitlesHudMixin {
             this.offset += config.getOffsetY();
             if (config.isWarningShown() && armorItems.stream().anyMatch(ArmorHudMod::shouldShowWarning)) {
                 this.offset += 10;
-                if (config.getWarningIconBobbingIntervalMs() != 0.0F) {
+                if (config.getWarningBobIntensity() != 0) {
                     this.offset += 7;
                 }
             }

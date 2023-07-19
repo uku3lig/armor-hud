@@ -30,7 +30,7 @@ public class BossBarHudMixin {
             y += 22 + config.getOffsetY();
             if (config.isWarningShown() && armorItems.stream().anyMatch(ArmorHudMod::shouldShowWarning)) {
                 y += 10;
-                if (config.getWarningIconBobbingIntervalMs() != 0.0F) {
+                if (config.getWarningBobIntensity() != 0) {
                     y += 7;
                 }
             }
