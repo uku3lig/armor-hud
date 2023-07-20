@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "ukus-armor-hud",
   "version": "${version}",
-  "name": "uku's ArmorHUD",
-  "description": "This mod adds a minimalistic vanilla-like widget that shows your armor items and a warning if durability is low enough.",
+  "name": "uku's Armor HUD",
+  "description": "This mod adds a minimalistic vanilla-like widget that shows your armor items and a warning if durability is low enough. Forked by uku.",
   "authors": [
     "BerdinskiyBear",
     "uku"
@@ -14,7 +14,7 @@
     "issues": "https://github.com/uku3lig/armor-hud/issues"
   },
   "license": "MIT",
-  "icon": "assets/armor_hud/icon.png",
+  "icon": "assets/ukus-armor-hud/icon.png",
   "environment": "client",
   "entrypoints": {
     "ukulib": [
@@ -22,16 +22,15 @@
     ]
   },
   "mixins": [
-    "armor_hud.mixins.json"
+    "ukus-armor-hud.mixins.json"
   ],
   "accessWidener": "ukus-armor-hud.accesswidener",
   "depends": {
     "fabricloader": ">=0.13",
-    "minecraft": ">=1.20"
+    "minecraft": ">=1.20",
+    "ukulib": "^1.0-"
   },
   "recommends": {
-    "fabric-resource-loader-v0": "*",
-    "cloth-config2": ">=11.0.99",
     "modmenu": ">=7.1"
   },
   "breaks": {
