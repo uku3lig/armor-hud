@@ -16,7 +16,7 @@
   "armorhud.option.showWarning": "Show Warning",
   "armorhud.option.minDuraValue": "Min Durability",
   "armorhud.option.minDuraPercent": "Min Durability",
-  "armorhud.option.iconBobInterval": "Icon Bob Interval",
+  "armorhud.option.iconBobIntensity": "Icon Bob Intensity",
   "armorhud.option.topCenter": "Top Center",
   "armorhud.option.top": "Top",
   "armorhud.option.bottom": "Bottom",

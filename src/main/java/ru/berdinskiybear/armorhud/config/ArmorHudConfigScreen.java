@@ -34,7 +34,7 @@ public class ArmorHudConfigScreen extends AbstractConfigScreen<ArmorHudConfig> {
                 CyclingOption.ofBoolean("armorhud.option.showWarning", config.isWarningShown(), config::setWarningShown),
                 new TypedInputOption<>("armorhud.option.minDuraValue", String.valueOf(config.getMinDurabilityValue()), config::setMinDurabilityValue, this::getInt),
                 new SliderOption("armorhud.option.minDuraPercent", config.getMinDurabilityPercentage(), config::setMinDurabilityPercentage, SliderOption.PERCENT_VALUE_TO_TEXT),
-                new TypedInputOption<>("armorhud.option.iconBobInterval", String.valueOf(config.getWarningBobIntensity()), config::setWarningBobIntensity, this::getInt)
+                new TypedInputOption<>("armorhud.option.iconBobIntensity", String.valueOf(config.getWarningBobIntensity()), config::setWarningBobIntensity, this::getInt)
         };
     }
 
