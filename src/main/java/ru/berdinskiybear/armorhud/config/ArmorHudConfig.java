@@ -6,14 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.minecraft.util.Arm;
 import net.minecraft.util.TranslatableOption;
-
-import java.io.Serializable;
+import net.uku3lig.ukulib.config.IConfig;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArmorHudConfig implements Serializable {
+public class ArmorHudConfig implements IConfig<ArmorHudConfig> {
     private boolean enabled = true;
     private Anchor anchor = Anchor.HOTBAR;
     private Side side = Side.LEFT;
@@ -31,6 +30,11 @@ public class ArmorHudConfig implements Serializable {
     private int minDurabilityValue = 5;
     private double minDurabilityPercentage = 0.05;
     private int warningBobIntensity = 3;
+
+    @Override
+    public ArmorHudConfig defaultConfig() {
+        return new ArmorHudConfig();
+    }
 
     @Getter
     @AllArgsConstructor

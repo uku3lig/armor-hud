@@ -10,7 +10,7 @@ import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
 public final class ArmorHudMod {
     @Getter
-    private static final ConfigManager<ArmorHudConfig> manager = ConfigManager.createDefault(ArmorHudConfig.class, "ukus-armor-hud");
+    private static final ConfigManager<ArmorHudConfig> manager = ConfigManager.create(ArmorHudConfig.class, "ukus-armor-hud");
 
     @Nullable
     public static PlayerEntity getCameraPlayer() {
