@@ -56,6 +56,9 @@ public abstract class InGameHudMixin {
     private static final int WARNING_OFFSET = 7;
 
     @Unique
+    private static final Identifier WARNING_TEXTURE = new Identifier("ukus-armor-hud", "warn.png");
+
+    @Unique
     private List<ItemStack> armorItems = new ArrayList<>();
     @Unique
     private int shift = 0;
@@ -160,21 +163,21 @@ public abstract class InGameHudMixin {
         context.getMatrices().translate(0, 0, -91);
         switch (config.getStyle()) {
             case HOTBAR -> {
-                context.drawTexture(InGameHud.WIDGETS_TEXTURE, armorWidgetX, armorWidgetY, 0, 0, widgetWidth - 3, HEIGHT);
-                context.drawTexture(InGameHud.WIDGETS_TEXTURE, armorWidgetX + widgetWidth - 3, armorWidgetY, 182 - 3, 0, 3, HEIGHT);
+                context.drawGuiTexture(InGameHud.HOTBAR_TEXTURE, 182, 22, 0, 0, armorWidgetX, armorWidgetY, widgetWidth - 3, HEIGHT);
+                context.drawGuiTexture(InGameHud.HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
             }
             case ROUNDED_CORNERS -> {
-                context.drawTexture(InGameHud.WIDGETS_TEXTURE, armorWidgetX, armorWidgetY, 24, 23, 3, HEIGHT);
-                context.drawTexture(InGameHud.WIDGETS_TEXTURE, armorWidgetX + 3, armorWidgetY, 3, 0, widgetWidth - 6, HEIGHT);
-                context.drawTexture(InGameHud.WIDGETS_TEXTURE, armorWidgetX + widgetWidth - 3, armorWidgetY, 24 + WIDTH - 3, 23, 3, HEIGHT);
+                context.drawGuiTexture(InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, 3, HEIGHT);
+                context.drawGuiTexture(InGameHud.HOTBAR_TEXTURE, 182, 22, 3, 0, armorWidgetX + 3, armorWidgetY, widgetWidth - 6, HEIGHT);
+                context.drawGuiTexture(InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, WIDTH - 3, 1, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
             }
             case ROUNDED -> {
                 int borderWidth = (WIDTH - STEP) / 2;
-                context.drawTexture(InGameHud.WIDGETS_TEXTURE, armorWidgetX, armorWidgetY, 24, 23, borderWidth, HEIGHT);
+                context.drawGuiTexture(InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, borderWidth, HEIGHT);
                 for (int i = 0; i < slots; i++) {
-                    context.drawTexture(InGameHud.WIDGETS_TEXTURE, armorWidgetX + borderWidth + i * STEP, armorWidgetY, 24 + borderWidth, 23, STEP, HEIGHT);
+                    context.drawGuiTexture(InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, armorWidgetX + borderWidth + i * STEP, armorWidgetY, STEP, HEIGHT);
                 }
-                context.drawTexture(InGameHud.WIDGETS_TEXTURE, armorWidgetX + widgetWidth - borderWidth, armorWidgetY, 24, 23, borderWidth, HEIGHT);
+                context.drawGuiTexture(InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX + widgetWidth - borderWidth, armorWidgetY, borderWidth, HEIGHT);
             }
         }
         context.getMatrices().pop();
@@ -193,10 +196,10 @@ public abstract class InGameHudMixin {
 
                     if (config.getWarningBobIntensity() != 0) {
                         int intensity = config.getWarningBobIntensity();
-                        y += this.random.nextInt(intensity) - Math.ceil(intensity / 2F);
+                        y += (int) (this.random.nextInt(intensity) - Math.ceil(intensity / 2F));
                     }
 
-                    context.drawTexture(InGameHud.WIDGETS_TEXTURE, x, y, 238, 22, 8, 8);
+                    context.drawTexture(WARNING_TEXTURE, x, y, 0, 0, 0, 8, 8, 8, 8);
                     i++;
                 } else if (config.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY) {
                     i++;

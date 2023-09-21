@@ -27,8 +27,8 @@
   "accessWidener": "ukus-armor-hud.accesswidener",
   "depends": {
     "fabricloader": ">=0.13",
-    "minecraft": ">=1.20",
-    "ukulib": "^1.0-"
+    "minecraft": ">=1.20.2",
+    "ukulib": "^1.0.0"
   },
   "recommends": {
     "modmenu": ">=7.1"
