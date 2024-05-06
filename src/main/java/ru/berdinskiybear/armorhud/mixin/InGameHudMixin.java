@@ -35,11 +35,6 @@ public abstract class InGameHudMixin {
     @Final
     private Random random;
 
-    @Shadow
-    private int scaledWidth;
-    @Shadow
-    private int scaledHeight;
-
     @Unique
     private static final int STEP = 20;
     @Unique
@@ -69,7 +64,7 @@ public abstract class InGameHudMixin {
     @Shadow
     protected abstract PlayerEntity getCameraPlayer();
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderHotbar(FLnet/minecraft/client/gui/DrawContext;)V", shift = At.Shift.AFTER))
+    @Inject(method = "renderHotbar", at = @At("TAIL"))
     public void renderArmorHud(DrawContext context, float tickDelta, CallbackInfo ci) {
         this.client.getProfiler().push("ukus-armor-hud");
 
@@ -143,14 +138,14 @@ public abstract class InGameHudMixin {
         final int widgetWidth = WIDTH + ((slots - 1) * STEP);
 
         final int armorWidgetX = config.getOffsetX() * sideMultiplier + switch (config.getAnchor()) {
-            case TOP_CENTER -> this.scaledWidth / 2 - (widgetWidth / 2);
-            case TOP, BOTTOM -> (widgetWidth - this.scaledWidth) * sideOffsetMultiplier;
+            case TOP_CENTER -> context.getScaledWindowWidth() / 2 - (widgetWidth / 2);
+            case TOP, BOTTOM -> (widgetWidth - context.getScaledWindowWidth()) * sideOffsetMultiplier;
             case HOTBAR ->
-                    this.scaledWidth / 2 + ((HOTBAR_OFFSET + addedHotbarOffset) * sideMultiplier) + (widgetWidth * sideOffsetMultiplier);
+                    context.getScaledWindowWidth() / 2 + ((HOTBAR_OFFSET + addedHotbarOffset) * sideMultiplier) + (widgetWidth * sideOffsetMultiplier);
         };
 
         final int armorWidgetY = config.getOffsetY() * verticalMultiplier + switch (config.getAnchor()) {
-            case BOTTOM, HOTBAR -> this.scaledHeight - HEIGHT;
+            case BOTTOM, HOTBAR -> context.getScaledWindowHeight() - HEIGHT;
             case TOP, TOP_CENTER -> 0;
         };
 
@@ -247,7 +242,7 @@ public abstract class InGameHudMixin {
     }
 
     @Inject(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;", shift = At.Shift.BY, by = 2))
-    public void calculateStatusEffectIconsOffset(DrawContext context, CallbackInfo ci) {
+    public void calculateStatusEffectIconsOffset(DrawContext context, float tickDelta, CallbackInfo ci) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled() || !config.isPushStatusEffectIcons() || config.getAnchor() != ArmorHudConfig.Anchor.TOP
                 || config.getSide() != ArmorHudConfig.Side.RIGHT) return;
