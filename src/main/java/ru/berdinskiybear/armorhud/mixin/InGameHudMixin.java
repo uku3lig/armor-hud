@@ -196,7 +196,7 @@ public abstract class InGameHudMixin {
 
                     context.drawTexture(WARNING_TEXTURE, x, y, 0, 0, 0, 8, 8, 8, 8);
                     i++;
-                } else if (config.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY) {
+                } else if (config.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY || !stack.isEmpty()) {
                     i++;
                 }
             }
