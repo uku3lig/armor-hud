@@ -6,6 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.AttackIndicator;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -51,7 +52,7 @@ public abstract class InGameHudMixin {
     private static final int WARNING_OFFSET = 7;
 
     @Unique
-    private static final Identifier WARNING_TEXTURE = new Identifier("ukus-armor-hud", "warn.png");
+    private static final Identifier WARNING_TEXTURE = Identifier.of("ukus-armor-hud", "warn.png");
 
     @Unique
     private List<ItemStack> armorItems = new ArrayList<>();
@@ -59,25 +60,25 @@ public abstract class InGameHudMixin {
     private int shift = 0;
 
     @Shadow
-    protected abstract void renderHotbarItem(DrawContext context, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed);
-
-    @Shadow
     protected abstract PlayerEntity getCameraPlayer();
 
+    @Shadow
+    protected abstract void renderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed);
+
     @Inject(method = "renderHotbar", at = @At("TAIL"))
-    public void renderArmorHud(DrawContext context, float tickDelta, CallbackInfo ci) {
+    public void renderArmorHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         this.client.getProfiler().push("ukus-armor-hud");
 
         // this was extracted to a different method to be able to return whenever I want
         // without messing up the profiler
-        drawArmorHud(context, tickDelta);
+        drawArmorHud(context, tickCounter);
 
         // pop this out of profiler
         this.client.getProfiler().pop();
     }
 
     @Unique
-    private void drawArmorHud(DrawContext context, float tickDelta) {
+    private void drawArmorHud(DrawContext context, RenderTickCounter tickCounter) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled()) return;
 
@@ -91,6 +92,10 @@ public abstract class InGameHudMixin {
 
         // return if there is nothing to draw
         if (nonEmptyAmount == 0 && config.getWidgetShown() != ArmorHudConfig.WidgetShown.ALWAYS) return;
+
+        if (config.isReversed())  {
+            armorItems = armorItems.reversed();
+        }
 
         // push them matrices :3
         context.getMatrices().push();
@@ -184,9 +189,8 @@ public abstract class InGameHudMixin {
 
             int i = 0;
             for (ItemStack stack : armorItems) {
-                int iReversed = config.isReversed() ? (slots - i - 1) : i;
                 if (ArmorHudMod.shouldShowWarning(stack)) {
-                    int x = armorWidgetX + (STEP * iReversed) + WARNING_OFFSET;
+                    int x = armorWidgetX + (STEP * i) + WARNING_OFFSET;
                     int y = armorWidgetY + (HEIGHT * (verticalOffsetMultiplier + 1)) + (8 * verticalOffsetMultiplier);
 
                     if (config.getWarningBobIntensity() != 0) {
@@ -212,11 +216,11 @@ public abstract class InGameHudMixin {
 
             for (int i = 0; i < armorItems.size(); i++) {
                 if (armorItems.get(i).isEmpty()) {
-                    Identifier spriteId = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES[i];
+                    int slotIndex = config.isReversed() ? i : 3 - i;
+                    Identifier spriteId = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES.get(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[slotIndex]);
                     Sprite sprite = this.client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(spriteId);
 
-                    int iReversed = config.isReversed() ? (armorItems.size() - i - 1) : i;
-                    context.drawSprite(armorWidgetX + (STEP * iReversed) + 3, armorWidgetY + 3, 0, 16, 16, sprite);
+                    context.drawSprite(armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, 0, 16, 16, sprite);
                 }
             }
 
@@ -227,9 +231,8 @@ public abstract class InGameHudMixin {
         // and at last I draw the armour items
         int i = 0;
         for (ItemStack stack : armorItems) {
-            int iReversed = config.isReversed() ? (slots - i - 1) : i;
             if (!stack.isEmpty()) {
-                this.renderHotbarItem(context, armorWidgetX + (STEP * iReversed) + 3, armorWidgetY + 3, tickDelta, player, stack, i + 1);
+                this.renderHotbarItem(context, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, tickCounter, player, stack, i + 1);
             }
 
             if (!stack.isEmpty() || config.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY) {
@@ -242,7 +245,7 @@ public abstract class InGameHudMixin {
     }
 
     @Inject(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;", shift = At.Shift.BY, by = 2))
-    public void calculateStatusEffectIconsOffset(DrawContext context, float tickDelta, CallbackInfo ci) {
+    public void calculateStatusEffectIconsOffset(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled() || !config.isPushStatusEffectIcons() || config.getAnchor() != ArmorHudConfig.Anchor.TOP
                 || config.getSide() != ArmorHudConfig.Side.RIGHT) return;

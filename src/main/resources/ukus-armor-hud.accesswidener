@@ -2,4 +2,5 @@ accessWidener v1 named
 
 accessible field net/minecraft/client/gui/hud/InGameHud HOTBAR_TEXTURE Lnet/minecraft/util/Identifier;
 accessible field net/minecraft/client/gui/hud/InGameHud HOTBAR_OFFHAND_LEFT_TEXTURE Lnet/minecraft/util/Identifier;
-accessible field net/minecraft/screen/PlayerScreenHandler EMPTY_ARMOR_SLOT_TEXTURES [Lnet/minecraft/util/Identifier;
+accessible field net/minecraft/screen/PlayerScreenHandler EMPTY_ARMOR_SLOT_TEXTURES Ljava/util/Map;
+accessible field net/minecraft/screen/PlayerScreenHandler EQUIPMENT_SLOT_ORDER [Lnet/minecraft/entity/EquipmentSlot;
