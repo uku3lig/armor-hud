@@ -1,4 +1,5 @@
 {
+  "armorhud.name": "uku's Armor Hud",
   "armorhud.config": "uku's Armor Hud config",
   "armorhud.option.enabled": "Enabled",
   "armorhud.option.anchor": "Anchor",
@@ -28,5 +29,7 @@
   "armorhud.option.ifAnyPresent": "If Any Present",
   "armorhud.option.notEmpty": "Not Empty",
   "armorhud.option.roundedCorners": "Rounded Corners",
-  "armorhud.option.rounded": "Rounded"
+  "armorhud.option.rounded": "Rounded",
+  "armorhud.keybind.toggle": "Toggle Armor Hud",
+  "armorhud.keybind.toggle.msg": "Armor Hud toggled"
 }

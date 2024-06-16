@@ -1,14 +1,19 @@
 package ru.berdinskiybear.armorhud;
 
 import lombok.Getter;
+import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.uku3lig.ukulib.config.ConfigManager;
+import net.uku3lig.ukulib.utils.Ukutils;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
-public final class ArmorHudMod {
+public final class ArmorHudMod implements ClientModInitializer {
     @Getter
     private static final ConfigManager<ArmorHudConfig> manager = ConfigManager.createDefault(ArmorHudConfig.class, "ukus-armor-hud");
 
@@ -28,6 +33,9 @@ public final class ArmorHudMod {
                 || maxDamage - damage <= manager.getConfig().getMinDurabilityValue();
     }
 
-    private ArmorHudMod() {
+    @Override
+    public void onInitializeClient() {
+        Ukutils.registerToggleBind(new KeyBinding("armorhud.keybind.toggle", GLFW.GLFW_KEY_UNKNOWN, "armorhud.name"),
+                () -> manager.getConfig().isEnabled(), b -> manager.getConfig().setEnabled(b), Text.translatable("armorhud.keybind.toggle.msg"));
     }
 }

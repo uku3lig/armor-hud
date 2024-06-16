@@ -17,6 +17,9 @@
   "icon": "assets/ukus-armor-hud/icon.png",
   "environment": "client",
   "entrypoints": {
+    "client": [
+      "ru.berdinskiybear.armorhud.ArmorHudMod"
+    ],
     "ukulib": [
       "ru.berdinskiybear.armorhud.config.UkulibIntegration"
     ]
@@ -28,7 +31,7 @@
   "depends": {
     "fabricloader": ">=0.15",
     "minecraft": ">=1.21",
-    "ukulib": "^1.3.0"
+    "ukulib": "^1.4.0"
   },
   "breaks": {
     "armor_hud": "*"
