@@ -6,6 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.AttackIndicator;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.profiler.Profilers;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -67,14 +69,14 @@ public abstract class InGameHudMixin {
 
     @Inject(method = "renderHotbar", at = @At("TAIL"))
     public void renderArmorHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        this.client.getProfiler().push("ukus-armor-hud");
+        Profilers.get().push("ukus-armor-hud");
 
         // this was extracted to a different method to be able to return whenever I want
         // without messing up the profiler
         drawArmorHud(context, tickCounter);
 
         // pop this out of profiler
-        this.client.getProfiler().pop();
+        Profilers.get().pop();
     }
 
     @Unique
@@ -163,21 +165,21 @@ public abstract class InGameHudMixin {
         context.getMatrices().translate(0, 0, -91);
         switch (config.getStyle()) {
             case HOTBAR -> {
-                context.drawGuiTexture(InGameHud.HOTBAR_TEXTURE, 182, 22, 0, 0, armorWidgetX, armorWidgetY, widgetWidth - 3, HEIGHT);
-                context.drawGuiTexture(InGameHud.HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
+                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_TEXTURE, 182, 22, 0, 0, armorWidgetX, armorWidgetY, widgetWidth - 3, HEIGHT);
+                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
             }
             case ROUNDED_CORNERS -> {
-                context.drawGuiTexture(InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, 3, HEIGHT);
-                context.drawGuiTexture(InGameHud.HOTBAR_TEXTURE, 182, 22, 3, 0, armorWidgetX + 3, armorWidgetY, widgetWidth - 6, HEIGHT);
-                context.drawGuiTexture(InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, WIDTH - 3, 1, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
+                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, 3, HEIGHT);
+                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_TEXTURE, 182, 22, 3, 0, armorWidgetX + 3, armorWidgetY, widgetWidth - 6, HEIGHT);
+                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, WIDTH - 3, 1, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
             }
             case ROUNDED -> {
                 int borderWidth = (WIDTH - STEP) / 2;
-                context.drawGuiTexture(InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, borderWidth, HEIGHT);
+                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, borderWidth, HEIGHT);
                 for (int i = 0; i < slots; i++) {
-                    context.drawGuiTexture(InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, armorWidgetX + borderWidth + i * STEP, armorWidgetY, STEP, HEIGHT);
+                    context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, armorWidgetX + borderWidth + i * STEP, armorWidgetY, STEP, HEIGHT);
                 }
-                context.drawGuiTexture(InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX + widgetWidth - borderWidth, armorWidgetY, borderWidth, HEIGHT);
+                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX + widgetWidth - borderWidth, armorWidgetY, borderWidth, HEIGHT);
             }
         }
         context.getMatrices().pop();
@@ -198,7 +200,7 @@ public abstract class InGameHudMixin {
                         y += (int) (this.random.nextInt(intensity) - Math.ceil(intensity / 2F));
                     }
 
-                    context.drawTexture(WARNING_TEXTURE, x, y, 0, 0, 0, 8, 8, 8, 8);
+                    context.drawTexture(RenderLayer::getGuiTextured, WARNING_TEXTURE, x, y, 0, 0, 8, 8, 8, 8);
                     i++;
                 } else if (config.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY || !stack.isEmpty()) {
                     i++;
@@ -220,7 +222,7 @@ public abstract class InGameHudMixin {
                     Identifier spriteId = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES.get(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[slotIndex]);
                     Sprite sprite = this.client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(spriteId);
 
-                    context.drawSprite(armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, 0, 16, 16, sprite);
+                    context.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, 0, 16, 16);
                 }
             }
 
