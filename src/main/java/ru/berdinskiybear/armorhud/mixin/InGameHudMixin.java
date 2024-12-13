@@ -8,7 +8,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -219,10 +218,8 @@ public abstract class InGameHudMixin {
             for (int i = 0; i < armorItems.size(); i++) {
                 if (armorItems.get(i).isEmpty()) {
                     int slotIndex = config.isReversed() ? i : 3 - i;
-                    Identifier spriteId = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES.get(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[slotIndex]);
-                    Sprite sprite = this.client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(spriteId);
-
-                    context.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, 0, 16, 16);
+                    Identifier texture = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES.get(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[slotIndex]);
+                    context.drawGuiTexture(RenderLayer::getGuiTextured, texture, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, 16, 16);
                 }
             }
 
