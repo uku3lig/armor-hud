@@ -14,6 +14,8 @@ import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
 import java.util.List;
 
+import static ru.berdinskiybear.armorhud.ArmorHudMod.ARMOR_SLOTS;
+
 @Mixin(SubtitlesHud.class)
 public class SubtitlesHudMixin {
     @Unique
@@ -29,7 +31,7 @@ public class SubtitlesHudMixin {
         PlayerEntity player = ArmorHudMod.getCameraPlayer();
         if (player == null) return;
 
-        List<ItemStack> armorItems = player.getInventory().armor.stream().filter(s -> !s.isEmpty()).toList();
+        List<ItemStack> armorItems = ARMOR_SLOTS.stream().map(i -> player.getInventory().getStack(i)).filter(s -> !s.isEmpty()).toList();
 
         if (!armorItems.isEmpty() || config.getWidgetShown() == ArmorHudConfig.WidgetShown.ALWAYS) {
             this.offset += config.getOffsetY();

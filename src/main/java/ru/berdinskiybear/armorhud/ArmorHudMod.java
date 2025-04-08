@@ -4,7 +4,9 @@ import lombok.Getter;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.uku3lig.ukulib.config.ConfigManager;
@@ -13,9 +15,16 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 public final class ArmorHudMod implements ClientModInitializer {
     @Getter
     private static final ConfigManager<ArmorHudConfig> manager = ConfigManager.createDefault(ArmorHudConfig.class, "ukus-armor-hud");
+
+    public static final List<Integer> ARMOR_SLOTS = Stream.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
+            .map(s -> s.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE))
+            .toList();
 
     @Nullable
     public static PlayerEntity getCameraPlayer() {

@@ -1,14 +1,11 @@
 package ru.berdinskiybear.armorhud.mixin;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -28,6 +25,8 @@ import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.berdinskiybear.armorhud.ArmorHudMod.ARMOR_SLOTS;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
@@ -88,14 +87,14 @@ public abstract class InGameHudMixin {
         if (player == null) return;
 
         // fetch armor items
-        this.armorItems = new ArrayList<>(player.getInventory().armor);
+        this.armorItems = ARMOR_SLOTS.stream().map(i -> player.getInventory().getStack(i)).toList();
         // amount is always in [0,4], we can safely cast to int
         int nonEmptyAmount = (int) this.armorItems.stream().filter(s -> !s.isEmpty()).count();
 
         // return if there is nothing to draw
         if (nonEmptyAmount == 0 && config.getWidgetShown() != ArmorHudConfig.WidgetShown.ALWAYS) return;
 
-        if (config.isReversed())  {
+        if (config.isReversed()) {
             armorItems = armorItems.reversed();
         }
 
@@ -156,10 +155,6 @@ public abstract class InGameHudMixin {
             case TOP, TOP_CENTER -> 0;
         };
 
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-
         // here I draw the slots
         context.getMatrices().push();
         context.getMatrices().translate(0, 0, -91);
@@ -214,19 +209,15 @@ public abstract class InGameHudMixin {
         if (config.isIconsShown() && config.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY) {
             context.getMatrices().push();
             context.getMatrices().translate(0, 0, -90);
-            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_COLOR, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
 
             for (int i = 0; i < armorItems.size(); i++) {
                 if (armorItems.get(i).isEmpty()) {
-                    int slotIndex = config.isReversed() ? i : 3 - i;
-                    Identifier spriteId = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES.get(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[slotIndex]);
-                    Sprite sprite = this.client.getSpriteAtlas(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).apply(spriteId);
-
-                    context.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, 0, 16, 16);
+                    int slotIndex = config.isReversed() ? 3 - i : i;
+                    Identifier identifier = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES.get(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[slotIndex]);
+                    context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, 16, 16);
                 }
             }
 
-            RenderSystem.defaultBlendFunc();
             context.getMatrices().pop();
         }
 
@@ -255,7 +246,7 @@ public abstract class InGameHudMixin {
         PlayerEntity player = this.getCameraPlayer();
         if (player == null) return;
 
-        int amount = (int) player.getInventory().armor.stream().filter(s -> !s.isEmpty()).count();
+        int amount = (int) ARMOR_SLOTS.stream().map(i -> player.getInventory().getStack(i)).filter(s -> !s.isEmpty()).count();
         if (amount == 0 || config.getWidgetShown() != ArmorHudConfig.WidgetShown.ALWAYS) return;
 
         int newShift = 22 + config.getOffsetY();
