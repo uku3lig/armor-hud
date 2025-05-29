@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "BerdinskiyBear",
+    "uku",
+    "AnAwesomGuy"
+  ],
+  "contact": {
+    "homepage": "https://github.com/uku3lig/armor-hud",
+    "issues": "https://github.com/uku3lig/armor-hud/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/${mod_id}/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "ru.berdinskiybear.armorhud.fabric.ArmorHudModImpl"
+    ]
+  },
+  "mixins": [
+    "${mod_id}.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15",
+    "minecraft": "~1.21.1"
+  },
+  "breaks": {
+    "armor_hud": "*"
+  }
+}

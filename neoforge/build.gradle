@@ -1,0 +1,63 @@
+plugins {
+    id 'com.gradleup.shadow'
+}
+
+architectury {
+    platformSetupLoomIde()
+    neoForge()
+}
+
+repositories {
+    maven { url 'https://maven.neoforged.net/releases/' }
+}
+
+loom.runs.configureEach {
+    property 'terminal.jline', 'true' // colors
+}
+
+configurations {
+    shadowCommon {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+    common {
+        canBeResolved = true
+        canBeConsumed = false
+    }
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentNeoForge.extendsFrom common
+}
+
+dependencies {
+    neoForge "net.neoforged:neoforge:$neoforge_version"
+
+    common(project(path: ":common", configuration: "namedElements")) transitive false
+    shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge"))
+
+    modApi "me.shedaniel.cloth:cloth-config-neoforge:$cloth_config_version"
+}
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier = "dev-shadow"
+    destinationDirectory.set destinationDirectory.dir('../devlibs').get()
+    exclude "architectury_inject*/**"
+}
+
+remapJar {
+    inputFile.set shadowJar.archiveFile
+    dependsOn shadowJar
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}

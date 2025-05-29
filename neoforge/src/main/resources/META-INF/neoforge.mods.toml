@@ -1,0 +1,20 @@
+modLoader="javafml"
+loaderVersion="[1.0,)"
+license="MIT"
+logoFile="assets/${mod_id}/icon.png"
+
+[[mods]]
+modId="${mod_id}"
+version="${version}"
+displayName="${mod_name}"
+authors="BerdinskiyBear, uku, AnAwesomGuy"
+description="${mod_description}"
+displayURL="https://modrinth.com/mod/ukus-armor-hud"
+
+[[mixins]]
+config="${mod_id}.mixins.json"
+
+[[dependencies.${mod_id}]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.21,)"
