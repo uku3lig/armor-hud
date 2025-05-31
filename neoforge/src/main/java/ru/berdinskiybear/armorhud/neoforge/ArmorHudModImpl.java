@@ -10,6 +10,7 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import ru.berdinskiybear.armorhud.ArmorHudMod;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
@@ -34,6 +35,11 @@ public class ArmorHudModImpl {
     public static void endClientTick(ClientTickEvent.Post event) {
         while (ArmorHudMod.TOGGLE_HUD.wasPressed())
             ArmorHudConfig.CONFIG.toggleEnabled();
+    }
+
+    @SubscribeEvent
+    public static void clientStop(GameShuttingDownEvent event) {
+        ArmorHudConfig.CONFIG.save();
     }
 
     public static void registerKeybinds(RegisterKeyMappingsEvent event) {

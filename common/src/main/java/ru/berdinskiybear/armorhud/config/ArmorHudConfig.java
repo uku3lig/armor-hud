@@ -25,15 +25,18 @@ import static net.minecraft.text.Text.translatable;
 
 public class ArmorHudConfig implements Serializable {
     public static final ArmorHudConfig CONFIG = new ArmorHudConfig();
+    public static final Path FILE = ArmorHudMod.configDir().resolve(ArmorHudMod.MOD_ID + ".json");
     public static final Gson GSON =
             new GsonBuilder().setLenient()
                     .setPrettyPrinting()
                     .registerTypeAdapter(ArmorHudConfig.class, (InstanceCreator<ArmorHudConfig>)type -> CONFIG)
                     .create();
-    public static final Path FILE = ArmorHudMod.configDir().resolve(ArmorHudMod.MOD_ID + ".json");
+
+    static {
+        CONFIG.load(); // if i run this in the constructor, the other fields are still null
+    }
 
     private ArmorHudConfig() {
-        load();
     }
 
     public boolean enabled = true;
@@ -306,9 +309,7 @@ public class ArmorHudConfig implements Serializable {
         else
             try (Reader reader = Files.newBufferedReader(FILE)) {
                 GSON.fromJson(reader, ArmorHudConfig.class);
-            } catch (IOException e) {
-                ArmorHudMod.LOGGER.error("Unable to read config from file!", e);
-            } catch (JsonSyntaxException e) {
+            } catch (JsonSyntaxException | IOException e) {
                 ArmorHudMod.LOGGER.error("Error reading config! Reloading from defaults!", e);
                 save();
             }
