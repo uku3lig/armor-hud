@@ -36,3 +36,4 @@ jobs:
           path: |
             */build/libs/*.jar
             !*/build/libs/*-dev*.jar
+            !common/build/libs/*.jar
