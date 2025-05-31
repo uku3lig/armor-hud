@@ -1,9 +1,6 @@
 package ru.berdinskiybear.armorhud.neoforge;
 
-import me.shedaniel.clothconfig.ClothConfigForgeDemo;
-import me.shedaniel.clothconfig2.ClothConfigDemo;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.EventBus;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;

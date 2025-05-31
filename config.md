@@ -35,6 +35,7 @@ inside curly brackets). If any of the Configuration parameters are missing their
         * `"HOTBAR"`
         * `"ROUNDED_CORNERS"`
         * `"ROUNDED"`
+        * `"NONE"`
     * Default value: `"HOTBAR"`
 7. ##### `"widgetShown"`
     * This setting defines when slots of the HUD widget are shown.

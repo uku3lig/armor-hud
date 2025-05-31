@@ -1,6 +1,7 @@
 {
   "armorhud.name": "uku's Armor Hud",
   "armorhud.config": "uku's Armor Hud Config",
+
   "armorhud.option.enabled": "Enabled",
   "armorhud.option.anchor": "Anchor",
   "armorhud.option.side": "Side",
@@ -18,18 +19,24 @@
   "armorhud.option.minDuraValue": "Min Durability",
   "armorhud.option.minDuraPercent": "Min Durability",
   "armorhud.option.iconBobIntensity": "Icon Bob Intensity",
+
   "armorhud.option.topCenter": "Top Center",
   "armorhud.option.top": "Top",
   "armorhud.option.bottom": "Bottom",
   "armorhud.option.hotbar": "Hotbar",
-  "armorhud.option.alwaysIgnore": "Always Ignore",
-  "armorhud.option.adhere": "Adhere",
-  "armorhud.option.alwaysLeaveSpace": "Always Leave Space",
+
+  "armorhud.option.roundedCorners": "Rounded Corners",
+  "armorhud.option.rounded": "Rounded",
+  "armorhud.option.none": "No Background",
+
   "armorhud.option.always": "Always",
   "armorhud.option.ifAnyPresent": "If Any Present",
   "armorhud.option.notEmpty": "Not Empty",
-  "armorhud.option.roundedCorners": "Rounded Corners",
-  "armorhud.option.rounded": "Rounded",
+
+  "armorhud.option.alwaysIgnore": "Always Ignore",
+  "armorhud.option.adhere": "Adhere",
+  "armorhud.option.alwaysLeaveSpace": "Always Leave Space",
+
   "armorhud.keybind.toggle": "Toggle Armor Hud",
   "armorhud.keybind.toggle.msg": "Armor Hud toggled"
 }

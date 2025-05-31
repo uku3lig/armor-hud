@@ -59,9 +59,6 @@ public class ArmorHudConfig implements Serializable {
     public boolean isDisabled() {
         return !enabled;
     }
-    public boolean isEnabled() {
-        return enabled;
-    }
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
@@ -165,7 +162,7 @@ public class ArmorHudConfig implements Serializable {
     //endregion
 
     public void toggleEnabled() {
-        setEnabled(!isEnabled());
+        setEnabled(!isDisabled());
     }
 
     public enum Anchor implements TranslatableOption, SelectionListEntry.Translatable {
@@ -223,7 +220,8 @@ public class ArmorHudConfig implements Serializable {
     public enum Style implements TranslatableOption, SelectionListEntry.Translatable {
         HOTBAR("armorhud.option.hotbar"),
         ROUNDED_CORNERS("armorhud.option.roundedCorners"),
-        ROUNDED("armorhud.option.rounded");
+        ROUNDED("armorhud.option.rounded"),
+        NONE("armorhud.option.none");
 
         public final String translationKey;
 

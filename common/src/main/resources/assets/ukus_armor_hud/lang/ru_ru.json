@@ -1,6 +1,7 @@
 {
   "armorhud.name": "Armor Hud от uku",
   "armorhud.config": "Настройки Armor Hud от uku",
+
   "armorhud.option.enabled": "Включён",
   "armorhud.option.anchor": "Точка привязки",
   "armorhud.option.side": "Сторона",
@@ -18,18 +19,23 @@
   "armorhud.option.minDuraValue": "Мин. прочность",
   "armorhud.option.minDuraPercent": "Мин. прочность",
   "armorhud.option.iconBobIntensity": "Интенсивность покачивания иконок",
+
   "armorhud.option.topCenter": "Вверху по центру",
   "armorhud.option.top": "Вверху",
   "armorhud.option.bottom": "Внизу",
   "armorhud.option.hotbar": "Hotbar",
+
+  "armorhud.option.roundedCorners": "Закруглённые углы",
+  "armorhud.option.rounded": "Закруглённый",
+
+  "armorhud.option.ifAnyPresent": "Если есть",
+  "armorhud.option.always": "Всегда",
+  "armorhud.option.notEmpty": "Если не пусто",
+
   "armorhud.option.alwaysIgnore": "Всегда игнорировать",
   "armorhud.option.adhere": "Прилипать",
   "armorhud.option.alwaysLeaveSpace": "Всегда оставлять место",
-  "armorhud.option.always": "Всегда",
-  "armorhud.option.ifAnyPresent": "Если есть",
-  "armorhud.option.notEmpty": "Если не пусто",
-  "armorhud.option.roundedCorners": "Закруглённые углы",
-  "armorhud.option.rounded": "Закруглённый",
+
   "armorhud.keybind.toggle": "Вкл/Выкл Armor Hud",
   "armorhud.keybind.toggle.msg": "Armor Hud включен"
 }
