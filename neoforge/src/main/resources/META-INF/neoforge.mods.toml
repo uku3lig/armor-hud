@@ -10,6 +10,7 @@ displayName="${mod_name}"
 authors="BerdinskiyBear, uku, AnAwesomGuy"
 description="${mod_description}"
 displayURL="https://modrinth.com/mod/ukus-armor-hud"
+logoFile="assets/${mod_id}/icon.png"
 
 [[mixins]]
 config="${mod_id}.mixins.json"

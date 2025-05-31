@@ -29,7 +29,7 @@ public class ArmorHudConfig implements Serializable {
     public static final Gson GSON =
             new GsonBuilder().setLenient()
                     .setPrettyPrinting()
-                    .registerTypeAdapter(ArmorHudConfig.class, (InstanceCreator<ArmorHudConfig>)type -> CONFIG)
+                    .registerTypeAdapter(ArmorHudConfig.class, (InstanceCreator<ArmorHudConfig>) type -> CONFIG)
                     .create();
 
     static {
@@ -155,6 +155,9 @@ public class ArmorHudConfig implements Serializable {
     public void setMinDurabilityPercentage(double minDurabilityPercentage) {
         this.minDurabilityPercentage = minDurabilityPercentage;
     }
+    public void setMinDurabilityPercentage(int minDurabilityPercentage) {
+        this.minDurabilityPercentage = minDurabilityPercentage / 100.0;
+    }
     public int getWarningBobIntensity() {
         return warningBobIntensity;
     }
@@ -193,6 +196,10 @@ public class ArmorHudConfig implements Serializable {
         @Override
         public @NotNull String getKey() {
             return translationKey;
+        }
+
+        public boolean isTop() {
+            return this == TOP || this == TOP_CENTER;
         }
     }
 
@@ -316,7 +323,7 @@ public class ArmorHudConfig implements Serializable {
     }
 
     public void save() {
-        try (Writer writer = Files.newBufferedWriter(FILE, StandardOpenOption.CREATE)) {
+        try (Writer writer = Files.newBufferedWriter(FILE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             GSON.toJson(CONFIG, writer);
         } catch (IOException e) {
             ArmorHudMod.LOGGER.error("Unable to write config to file!", e);
@@ -325,11 +332,11 @@ public class ArmorHudConfig implements Serializable {
 
     public Screen createScreen(Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create()
-                .setTitle(translatable("armorhud.name"))
+                .setTitle(translatable("armorhud.config"))
                 .setParentScreen(parent)
                 .setSavingRunnable(this::save);
         ConfigEntryBuilder entries = builder.entryBuilder();
-        builder.getOrCreateCategory(translatable("armorhud.config"))
+        builder.getOrCreateCategory(translatable("armorhud.name"))
                 .addEntry(
                         entries.startBooleanToggle(translatable("armorhud.option.enabled"), enabled)
                                 .setSaveConsumer(this::setEnabled).build())
@@ -339,6 +346,12 @@ public class ArmorHudConfig implements Serializable {
                 .addEntry(
                         entries.startEnumSelector(translatable("armorhud.option.side"), Side.class, side)
                                 .setSaveConsumer(this::setSide).build())
+                .addEntry(
+                        entries.startIntField(translatable("armorhud.option.offsetX"), offsetX)
+                                .setSaveConsumer(this::setOffsetX).build())
+                .addEntry(
+                        entries.startIntField(translatable("armorhud.option.offsetY"), offsetY)
+                                .setSaveConsumer(this::setOffsetY).build())
                 .addEntry(
                         entries.startEnumSelector(translatable("armorhud.option.style"), Style.class, style)
                                 .setSaveConsumer(this::setStyle).build())
@@ -367,19 +380,10 @@ public class ArmorHudConfig implements Serializable {
                         entries.startBooleanToggle(translatable("armorhud.option.showWarning"), warningShown)
                                 .setSaveConsumer(this::setWarningShown).build())
                 .addEntry(
-                        entries.startIntField(translatable("armorhud.option.offsetX"), offsetX)
-                                .setSaveConsumer(this::setOffsetX).build())
-                .addEntry(
-                        entries.startIntField(translatable("armorhud.option.offsetX"), offsetX)
-                                .setSaveConsumer(this::setOffsetX).build())
-                .addEntry(
-                        entries.startIntField(translatable("armorhud.option.offsetY"), offsetY)
-                                .setSaveConsumer(this::setOffsetY).build())
-                .addEntry(
                         entries.startIntField(translatable("armorhud.option.minDuraValue"), minDurabilityValue)
                                 .setSaveConsumer(this::setMinDurabilityValue).build())
                 .addEntry(
-                        entries.startIntSlider(translatable("armorhud.option.offsetX"), (int) minDurabilityPercentage, 0, 100)
+                        entries.startIntSlider(translatable("armorhud.option.minDuraPercent"), (int) (minDurabilityPercentage * 100.0), 0, 100)
                                 .setSaveConsumer(this::setMinDurabilityPercentage).build())
                 .addEntry(
                         entries.startIntField(translatable("armorhud.option.iconBobIntensity"), warningBobIntensity)
