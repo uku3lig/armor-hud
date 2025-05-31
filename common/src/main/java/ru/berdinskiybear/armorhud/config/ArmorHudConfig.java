@@ -9,7 +9,6 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.gui.entries.SelectionListEntry;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.Arm;
-import net.minecraft.util.TranslatableOption;
 import org.jetbrains.annotations.NotNull;
 import ru.berdinskiybear.armorhud.ArmorHudMod;
 
@@ -171,7 +170,7 @@ public class ArmorHudConfig implements Serializable {
         setEnabled(!isDisabled());
     }
 
-    public enum Anchor implements TranslatableOption, SelectionListEntry.Translatable {
+    public enum Anchor implements SelectionListEntry.Translatable {
         TOP_CENTER("armorhud.option.topCenter"),
         TOP("armorhud.option.top"),
         BOTTOM("armorhud.option.bottom"),
@@ -184,16 +183,6 @@ public class ArmorHudConfig implements Serializable {
         }
 
         @Override
-        public int getId() {
-            return ordinal();
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return translationKey;
-        }
-
-        @Override
         public @NotNull String getKey() {
             return translationKey;
         }
@@ -203,7 +192,7 @@ public class ArmorHudConfig implements Serializable {
         }
     }
 
-    public enum Side implements TranslatableOption, SelectionListEntry.Translatable {
+    public enum Side implements SelectionListEntry.Translatable {
         RIGHT,
         LEFT;
 
@@ -212,22 +201,12 @@ public class ArmorHudConfig implements Serializable {
         }
 
         @Override
-        public int getId() {
-            return asArm().getId();
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return asArm().getTranslationKey();
-        }
-
-        @Override
         public @NotNull String getKey() {
-            return getTranslationKey();
+            return asArm().getTranslationKey();
         }
     }
 
-    public enum Style implements TranslatableOption, SelectionListEntry.Translatable {
+    public enum Style implements SelectionListEntry.Translatable {
         HOTBAR("armorhud.option.hotbar"),
         ROUNDED_CORNERS("armorhud.option.roundedCorners"),
         ROUNDED("armorhud.option.rounded"),
@@ -240,22 +219,12 @@ public class ArmorHudConfig implements Serializable {
         }
 
         @Override
-        public int getId() {
-            return ordinal();
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return translationKey;
-        }
-
-        @Override
         public @NotNull String getKey() {
             return translationKey;
         }
     }
 
-    public enum WidgetShown implements TranslatableOption, SelectionListEntry.Translatable {
+    public enum WidgetShown implements SelectionListEntry.Translatable {
         ALWAYS("armorhud.option.always"),
         IF_ANY_PRESENT("armorhud.option.ifAnyPresent"),
         NOT_EMPTY("armorhud.option.notEmpty");
@@ -267,23 +236,13 @@ public class ArmorHudConfig implements Serializable {
         }
 
         @Override
-        public int getId() {
-            return ordinal();
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return translationKey;
-        }
-
-        @Override
         public @NotNull String getKey() {
             return translationKey;
         }
 
     }
 
-    public enum OffhandSlotBehavior implements TranslatableOption, SelectionListEntry.Translatable {
+    public enum OffhandSlotBehavior implements SelectionListEntry.Translatable {
         ALWAYS_IGNORE("armorhud.option.alwaysIgnore"),
         ADHERE("armorhud.option.adhere"),
         ALWAYS_LEAVE_SPACE("armorhud.option.alwaysLeaveSpace");
@@ -292,16 +251,6 @@ public class ArmorHudConfig implements Serializable {
 
         OffhandSlotBehavior(String translationKey) {
             this.translationKey = translationKey;
-        }
-
-        @Override
-        public int getId() {
-            return ordinal();
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return translationKey;
         }
 
         @Override
