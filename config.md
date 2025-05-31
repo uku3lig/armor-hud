@@ -29,18 +29,13 @@ inside curly brackets). If any of the Configuration parameters are missing their
     * Offsets widget position on a vertical axis, otherwise the same as X offset.
     * Default value: `0`
 6. ##### `"style"`
-    * Widget slot style defines how slots are drawn on the screen. If widget slots look weird
-      (for example, parts of texture do not match) with your resource pack you should try different styles to find
-      ones that work and choose one that you prefer.
+    * Widget slot style defines how slots are drawn on the screen.
+      Try different styles to find ones that work and choose one that you prefer.
     * Possible values:
-        * `"STYLE_1_E"`
-        * `"STYLE_1_H"`
-        * `"STYLE_1_S"`
-        * `"STYLE_2_E"`
-        * `"STYLE_2_H"`
-        * `"STYLE_2_S"`
-        * `"STYLE_3"`
-    * Default value: `"STYLE_1_E"`
+        * `"HOTBAR"`
+        * `"ROUNDED_CORNERS"`
+        * `"ROUNDED"`
+    * Default value: `"HOTBAR"`
 7. ##### `"widgetShown"`
     * This setting defines when slots of the HUD widget are shown.
     * Possible values:
@@ -57,13 +52,13 @@ inside curly brackets). If any of the Configuration parameters are missing their
         * `"ALWAYS_LEAVE_SPACE"`: widget always leaves space for the offhand slot even if it is not shown.
     * Default value: `"ADHERE"`
 9. ##### `"pushBossbars"`
-   * If widget is at the top in the middle bossbars will be pushed down by the widget.
+   * If widget is in the top middle bossbars will be pushed down by the widget.
    * Default value: `true`
 10. ##### `"pushStatusEffectIcons"`
-    * If widget is at the top right corner effect icons will be pushed down by the widget.
+    * If widget is in the top right corner effect icons will be pushed down by the widget.
     * Default value: `true`
 11. ##### `"pushSubtitles"`
-    * If widget is at the bottom right corner subtitles will be pushed up by the widget.
+    * If widget is in the bottom right corner subtitles will be pushed up by the widget.
     * Default value: `true`
 12. ##### `"reversed"`
      * Reverses order of armor items in the slots of the widget.
@@ -75,13 +70,13 @@ inside curly brackets). If any of the Configuration parameters are missing their
      * If enabled, a small warning will appear at the slot of the item with low durability.
      * Default value: `true`
 15. ##### `"minDurabilityValue"`
-     * If durability value of a displayed item is equal or lower than this setting, a warning can be shown.
+     * If durability value of a displayed item is equal or lower than this setting, a warning will be shown.
      * Default value: `5`
 16. ##### `"minDurabilityPercentage"`
-     * If durability of a displayed item is equal or below this percentage, a warning can be shown.
+     * If durability of a displayed item is equal or below this percentage, a warning will be shown.
      * Default value: `0.05`
-17. ##### `"warningIconBobbingIntervalMs"`
+17. ##### `"warningBobIntensity"`
      * This parameter defines how quickly warning icon will move up and down when shown.
-     Lower the number quicker the motion.
+       Lower the number quicker the motion.
      * Set to 0 if you want to disable bobbing.
-     * Default value: `2000.0`
+     * Default value: `3`

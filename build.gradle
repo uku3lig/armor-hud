@@ -64,4 +64,10 @@ subprojects {
             rename { "${it}_${project.mod_id}" }
         }
     }
+
+    loom.runs.configureEach {
+        property 'mixin.debug.export', 'true'
+        property 'mixin.debug.verbose', 'true'
+        property 'terminal.jline', 'true'
+    }
 }

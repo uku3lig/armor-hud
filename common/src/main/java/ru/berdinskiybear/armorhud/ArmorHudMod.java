@@ -5,6 +5,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -12,17 +13,24 @@ import org.slf4j.LoggerFactory;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
 import java.nio.file.Path;
+import java.util.List;
 
 public final class ArmorHudMod {
-    public static final String MOD_ID = "ukus-armor-hud";
+    public static final String MOD_ID = "ukus_armor_hud";
     
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static final KeyBinding TOGGLE_HUD = new KeyBinding("armorhud.keybind.toggle", GLFW.GLFW_KEY_UNKNOWN, "armorhud.name");
-    
+
+    public static final Identifier WARNING_TEXTURE = Identifier.of(ArmorHudMod.MOD_ID, "warn.png");
+
     @Nullable
     public static PlayerEntity getCameraPlayer() {
         return MinecraftClient.getInstance().getCameraEntity() instanceof PlayerEntity player ? player : null;
+    }
+
+    public static List<ItemStack> nonEmptyArmor(PlayerEntity player) {
+        return player.getInventory().armor.stream().filter(s -> !s.isEmpty()).toList();
     }
 
     public static boolean shouldShowWarning(ItemStack stack) {

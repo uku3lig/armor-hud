@@ -19,6 +19,9 @@
   "entrypoints": {
     "client": [
       "ru.berdinskiybear.armorhud.fabric.ArmorHudModImpl"
+    ],
+    "modmenu": [
+      "ru.berdinskiybear.armorhud.fabric.ArmorHudModMenu"
     ]
   },
   "mixins": [

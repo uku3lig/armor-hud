@@ -6,9 +6,11 @@ import com.google.gson.InstanceCreator;
 import com.google.gson.JsonSyntaxException;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import me.shedaniel.clothconfig2.gui.entries.SelectionListEntry;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.Arm;
 import net.minecraft.util.TranslatableOption;
+import org.jetbrains.annotations.NotNull;
 import ru.berdinskiybear.armorhud.ArmorHudMod;
 
 import java.io.IOException;
@@ -21,16 +23,17 @@ import java.nio.file.StandardOpenOption;
 
 import static net.minecraft.text.Text.translatable;
 
-@SuppressWarnings("unused")
 public class ArmorHudConfig implements Serializable {
     public static final ArmorHudConfig CONFIG = new ArmorHudConfig();
     public static final Gson GSON =
             new GsonBuilder().setLenient()
+                    .setPrettyPrinting()
                     .registerTypeAdapter(ArmorHudConfig.class, (InstanceCreator<ArmorHudConfig>)type -> CONFIG)
                     .create();
     public static final Path FILE = ArmorHudMod.configDir().resolve(ArmorHudMod.MOD_ID + ".json");
 
     private ArmorHudConfig() {
+        load();
     }
 
     public boolean enabled = true;
@@ -165,7 +168,7 @@ public class ArmorHudConfig implements Serializable {
         setEnabled(!isEnabled());
     }
 
-    public enum Anchor implements TranslatableOption {
+    public enum Anchor implements TranslatableOption, SelectionListEntry.Translatable {
         TOP_CENTER("armorhud.option.topCenter"),
         TOP("armorhud.option.top"),
         BOTTOM("armorhud.option.bottom"),
@@ -186,9 +189,14 @@ public class ArmorHudConfig implements Serializable {
         public String getTranslationKey() {
             return translationKey;
         }
+
+        @Override
+        public @NotNull String getKey() {
+            return translationKey;
+        }
     }
 
-    public enum Side implements TranslatableOption {
+    public enum Side implements TranslatableOption, SelectionListEntry.Translatable {
         RIGHT,
         LEFT;
 
@@ -205,53 +213,14 @@ public class ArmorHudConfig implements Serializable {
         public String getTranslationKey() {
             return asArm().getTranslationKey();
         }
-    }
-
-    public enum OffhandSlotBehavior implements TranslatableOption {
-        ALWAYS_IGNORE("armorhud.option.alwaysIgnore"),
-        ADHERE("armorhud.option.adhere"),
-        ALWAYS_LEAVE_SPACE("armorhud.option.alwaysLeaveSpace");
-
-        public final String translationKey;
-
-        OffhandSlotBehavior(String translationKey) {
-            this.translationKey = translationKey;
-        }
 
         @Override
-        public int getId() {
-            return ordinal();
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return translationKey;
+        public @NotNull String getKey() {
+            return getTranslationKey();
         }
     }
 
-    public enum WidgetShown implements TranslatableOption {
-        ALWAYS("armorhud.option.always"),
-        IF_ANY_PRESENT("armorhud.option.ifAnyPresent"),
-        NOT_EMPTY("armorhud.option.notEmpty");
-
-        public final String translationKey;
-
-        WidgetShown(String translationKey) {
-            this.translationKey = translationKey;
-        }
-
-        @Override
-        public int getId() {
-            return ordinal();
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return translationKey;
-        }
-    }
-
-    public enum Style implements TranslatableOption {
+    public enum Style implements TranslatableOption, SelectionListEntry.Translatable {
         HOTBAR("armorhud.option.hotbar"),
         ROUNDED_CORNERS("armorhud.option.roundedCorners"),
         ROUNDED("armorhud.option.rounded");
@@ -271,6 +240,66 @@ public class ArmorHudConfig implements Serializable {
         public String getTranslationKey() {
             return translationKey;
         }
+
+        @Override
+        public @NotNull String getKey() {
+            return translationKey;
+        }
+    }
+
+    public enum WidgetShown implements TranslatableOption, SelectionListEntry.Translatable {
+        ALWAYS("armorhud.option.always"),
+        IF_ANY_PRESENT("armorhud.option.ifAnyPresent"),
+        NOT_EMPTY("armorhud.option.notEmpty");
+
+        public final String translationKey;
+
+        WidgetShown(String translationKey) {
+            this.translationKey = translationKey;
+        }
+
+        @Override
+        public int getId() {
+            return ordinal();
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return translationKey;
+        }
+
+        @Override
+        public @NotNull String getKey() {
+            return translationKey;
+        }
+
+    }
+
+    public enum OffhandSlotBehavior implements TranslatableOption, SelectionListEntry.Translatable {
+        ALWAYS_IGNORE("armorhud.option.alwaysIgnore"),
+        ADHERE("armorhud.option.adhere"),
+        ALWAYS_LEAVE_SPACE("armorhud.option.alwaysLeaveSpace");
+
+        public final String translationKey;
+
+        OffhandSlotBehavior(String translationKey) {
+            this.translationKey = translationKey;
+        }
+
+        @Override
+        public int getId() {
+            return ordinal();
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return translationKey;
+        }
+
+        @Override
+        public @NotNull String getKey() {
+            return translationKey;
+        }
     }
 
     public void load() {
@@ -283,11 +312,7 @@ public class ArmorHudConfig implements Serializable {
                 ArmorHudMod.LOGGER.error("Unable to read config from file!", e);
             } catch (JsonSyntaxException e) {
                 ArmorHudMod.LOGGER.error("Error reading config! Reloading from defaults!", e);
-                try (Writer writer = Files.newBufferedWriter(FILE, StandardOpenOption.CREATE)) {
-                    GSON.toJson(CONFIG, writer);
-                } catch (IOException ex) {
-                    ArmorHudMod.LOGGER.error("Unable to write config to file!", e);
-                }
+                save();
             }
     }
 
