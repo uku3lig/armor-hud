@@ -1,10 +1,10 @@
 package ru.berdinskiybear.armorhud.mixin;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.AttackIndicator;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -99,8 +99,8 @@ public abstract class InGameHudMixin {
         }
 
         // push them matrices :3
-        context.getMatrices().push();
-        context.getMatrices().translate(0, 0, 200);
+        context.getMatrices().pushMatrix();
+        // context.getMatrices().translate(0, 0, 200);
 
         // hotbar offset is relative to the bar, so when we are on the left it needs to be flipped
         // and on the right side, we need to flip the offset, except when anchored to the hotbar
@@ -156,33 +156,33 @@ public abstract class InGameHudMixin {
         };
 
         // here I draw the slots
-        context.getMatrices().push();
-        context.getMatrices().translate(0, 0, -91);
+        context.getMatrices().pushMatrix();
+        // context.getMatrices().translate(0, 0, -91);
         switch (config.getStyle()) {
             case HOTBAR -> {
-                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_TEXTURE, 182, 22, 0, 0, armorWidgetX, armorWidgetY, widgetWidth - 3, HEIGHT);
-                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 0, 0, armorWidgetX, armorWidgetY, widgetWidth - 3, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
             }
             case ROUNDED_CORNERS -> {
-                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, 3, HEIGHT);
-                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_TEXTURE, 182, 22, 3, 0, armorWidgetX + 3, armorWidgetY, widgetWidth - 6, HEIGHT);
-                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, WIDTH - 3, 1, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, 3, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 3, 0, armorWidgetX + 3, armorWidgetY, widgetWidth - 6, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, WIDTH - 3, 1, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
             }
             case ROUNDED -> {
                 int borderWidth = (WIDTH - STEP) / 2;
-                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, borderWidth, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, borderWidth, HEIGHT);
                 for (int i = 0; i < slots; i++) {
-                    context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, armorWidgetX + borderWidth + i * STEP, armorWidgetY, STEP, HEIGHT);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, armorWidgetX + borderWidth + i * STEP, armorWidgetY, STEP, HEIGHT);
                 }
-                context.drawGuiTexture(RenderLayer::getGuiTextured, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX + widgetWidth - borderWidth, armorWidgetY, borderWidth, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX + widgetWidth - borderWidth, armorWidgetY, borderWidth, HEIGHT);
             }
         }
-        context.getMatrices().pop();
+        context.getMatrices().popMatrix();
 
         // here I draw warning icons if necessary
         if (config.isWarningShown()) {
-            context.getMatrices().push();
-            context.getMatrices().translate(0, 0, 90);
+            context.getMatrices().pushMatrix();
+            // context.getMatrices().translate(0, 0, 90);
 
             int i = 0;
             for (ItemStack stack : armorItems) {
@@ -195,30 +195,30 @@ public abstract class InGameHudMixin {
                         y += (int) (this.random.nextInt(intensity) - Math.ceil(intensity / 2F));
                     }
 
-                    context.drawTexture(RenderLayer::getGuiTextured, WARNING_TEXTURE, x, y, 0, 0, 8, 8, 8, 8);
+                    context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x, y, 0, 0, 8, 8, 8, 8);
                     i++;
                 } else if (config.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY || !stack.isEmpty()) {
                     i++;
                 }
             }
 
-            context.getMatrices().pop();
+            context.getMatrices().popMatrix();
         }
 
         // here I blend in slot icons if so tells the current config
         if (config.isIconsShown() && config.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY) {
-            context.getMatrices().push();
-            context.getMatrices().translate(0, 0, -90);
+            context.getMatrices().pushMatrix();
+            // context.getMatrices().translate(0, 0, -90);
 
             for (int i = 0; i < armorItems.size(); i++) {
                 if (armorItems.get(i).isEmpty()) {
                     int slotIndex = config.isReversed() ? 3 - i : i;
                     Identifier identifier = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES.get(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[slotIndex]);
-                    context.drawGuiTexture(RenderLayer::getGuiTextured, identifier, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, 16, 16);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, identifier, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, 16, 16);
                 }
             }
 
-            context.getMatrices().pop();
+            context.getMatrices().popMatrix();
         }
 
         // and at last I draw the armour items
@@ -234,7 +234,7 @@ public abstract class InGameHudMixin {
         }
 
         // remove my translations
-        context.getMatrices().pop();
+        context.getMatrices().popMatrix();
     }
 
     @Inject(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;", shift = At.Shift.BY, by = 2))

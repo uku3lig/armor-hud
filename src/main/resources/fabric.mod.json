@@ -30,8 +30,8 @@
   "accessWidener": "ukus-armor-hud.accesswidener",
   "depends": {
     "fabricloader": ">=0.16",
-    "minecraft": ">=1.21.5",
-    "ukulib": "^1.7.1"
+    "minecraft": ">=1.21.6",
+    "ukulib": "^1.8.0"
   },
   "breaks": {
     "armor_hud": "*"

@@ -31,23 +31,24 @@ public class SubtitlesHudMixin {
         PlayerEntity player = ArmorHudMod.getCameraPlayer();
         if (player == null) return;
 
+        int offset = 0;
         List<ItemStack> armorItems = ARMOR_SLOTS.stream().map(i -> player.getInventory().getStack(i)).filter(s -> !s.isEmpty()).toList();
 
         if (!armorItems.isEmpty() || config.getWidgetShown() == ArmorHudConfig.WidgetShown.ALWAYS) {
-            this.offset += config.getOffsetY();
+            offset += config.getOffsetY();
             if (config.isWarningShown() && armorItems.stream().anyMatch(ArmorHudMod::shouldShowWarning)) {
-                this.offset += 10;
+                offset += 10;
                 if (config.getWarningBobIntensity() != 0) {
-                    this.offset += 7;
+                    offset += 7;
                 }
             }
         }
 
-        this.offset = Math.max(this.offset, 0);
+        this.offset = Math.max(offset, 0);
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V", shift = At.Shift.AFTER))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;", shift = At.Shift.AFTER, remap = false))
     public void offset(DrawContext context, CallbackInfo ci) {
-        context.getMatrices().translate(0.0F, -((float) this.offset), 0.0F);
+        context.getMatrices().translate(0.0F, -((float) this.offset));
     }
 }
