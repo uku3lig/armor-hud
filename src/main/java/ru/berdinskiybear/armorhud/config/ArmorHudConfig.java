@@ -95,7 +95,8 @@ public class ArmorHudConfig implements Serializable {
     public enum Style implements TranslatableOption {
         HOTBAR(0, "armorhud.option.hotbar"),
         ROUNDED_CORNERS(1, "armorhud.option.roundedCorners"),
-        ROUNDED(2, "armorhud.option.rounded");
+        ROUNDED(2, "armorhud.option.rounded"),
+        NONE(3, "armorhud.option.none");
 
         private final int id;
         private final String translationKey;

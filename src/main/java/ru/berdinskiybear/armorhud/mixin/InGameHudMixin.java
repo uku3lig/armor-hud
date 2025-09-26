@@ -172,6 +172,9 @@ public abstract class InGameHudMixin {
                 }
                 context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX + widgetWidth - borderWidth, armorWidgetY, borderWidth, HEIGHT);
             }
+            case NONE -> {
+                // nothing to draw ^_^
+            }
         }
         context.getMatrices().popMatrix();
 

@@ -31,6 +31,7 @@
   "armorhud.option.damagedPieces": "Damaged Pieces",
   "armorhud.option.roundedCorners": "Rounded Corners",
   "armorhud.option.rounded": "Rounded",
+  "armorhud.option.none": "None",
   "armorhud.keybind.toggle": "Toggle Armor Hud",
   "armorhud.keybind.toggle.msg": "Armor Hud toggled"
 }
