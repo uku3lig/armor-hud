@@ -79,10 +79,15 @@ public class ArmorHudConfig implements Serializable {
     public enum WidgetShown implements TranslatableOption {
         ALWAYS(0, "armorhud.option.always"),
         IF_ANY_PRESENT(1, "armorhud.option.ifAnyPresent"),
-        NOT_EMPTY(2, "armorhud.option.notEmpty");
+        NOT_EMPTY(2, "armorhud.option.notEmpty"),
+        DAMAGED_PIECES(3, "armorhud.option.damagedPieces");
 
         private final int id;
         private final String translationKey;
+
+        public boolean shouldDrawEmptySlots() {
+            return this == ALWAYS || this == IF_ANY_PRESENT;
+        }
     }
 
     @Getter

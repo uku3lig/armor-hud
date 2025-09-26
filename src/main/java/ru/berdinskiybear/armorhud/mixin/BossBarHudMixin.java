@@ -11,8 +11,6 @@ import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
 import java.util.List;
 
-import static ru.berdinskiybear.armorhud.ArmorHudMod.ARMOR_SLOTS;
-
 @Mixin(BossBarHud.class)
 public class BossBarHudMixin {
     @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 1)
@@ -25,8 +23,7 @@ public class BossBarHudMixin {
 
         PlayerEntity player = ArmorHudMod.getCameraPlayer();
         if (player == null) return y;
-
-        List<ItemStack> armorItems = ARMOR_SLOTS.stream().map(i -> player.getInventory().getStack(i)).filter(s -> !s.isEmpty()).toList();
+        List<ItemStack> armorItems = ArmorHudMod.getArmorItems(player);
 
         if (!armorItems.isEmpty() || config.getWidgetShown() == ArmorHudConfig.WidgetShown.ALWAYS) {
             y += 22 + config.getOffsetY();

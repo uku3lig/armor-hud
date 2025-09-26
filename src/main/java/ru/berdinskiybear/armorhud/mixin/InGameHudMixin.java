@@ -87,12 +87,9 @@ public abstract class InGameHudMixin {
         if (player == null) return;
 
         // fetch armor items
-        this.armorItems = ARMOR_SLOTS.stream().map(i -> player.getInventory().getStack(i)).toList();
-        // amount is always in [0,4], we can safely cast to int
-        int nonEmptyAmount = (int) this.armorItems.stream().filter(s -> !s.isEmpty()).count();
-
+        this.armorItems = ArmorHudMod.getArmorItems(player);
         // return if there is nothing to draw
-        if (nonEmptyAmount == 0 && config.getWidgetShown() != ArmorHudConfig.WidgetShown.ALWAYS) return;
+        if (this.armorItems.isEmpty()) return;
 
         if (config.isReversed()) {
             armorItems = armorItems.reversed();
@@ -140,8 +137,7 @@ public abstract class InGameHudMixin {
             }
         };
 
-        final int slots = config.getWidgetShown() == ArmorHudConfig.WidgetShown.NOT_EMPTY ? nonEmptyAmount : 4;
-        final int widgetWidth = WIDTH + ((slots - 1) * STEP);
+        final int widgetWidth = WIDTH + ((this.armorItems.size() - 1) * STEP);
 
         final int armorWidgetX = config.getOffsetX() * sideMultiplier + switch (config.getAnchor()) {
             case TOP_CENTER -> context.getScaledWindowWidth() / 2 - (widgetWidth / 2);
@@ -171,7 +167,7 @@ public abstract class InGameHudMixin {
             case ROUNDED -> {
                 int borderWidth = (WIDTH - STEP) / 2;
                 context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, borderWidth, HEIGHT);
-                for (int i = 0; i < slots; i++) {
+                for (int i = 0; i < this.armorItems.size(); i++) {
                     context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, armorWidgetX + borderWidth + i * STEP, armorWidgetY, STEP, HEIGHT);
                 }
                 context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX + widgetWidth - borderWidth, armorWidgetY, borderWidth, HEIGHT);
@@ -196,17 +192,15 @@ public abstract class InGameHudMixin {
                     }
 
                     context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x, y, 0, 0, 8, 8, 8, 8);
-                    i++;
-                } else if (config.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY || !stack.isEmpty()) {
-                    i++;
                 }
+                i++;
             }
 
             context.getMatrices().popMatrix();
         }
 
         // here I blend in slot icons if so tells the current config
-        if (config.isIconsShown() && config.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY) {
+        if (config.isIconsShown() && config.getWidgetShown().shouldDrawEmptySlots()) {
             context.getMatrices().pushMatrix();
             // context.getMatrices().translate(0, 0, -90);
 
@@ -224,13 +218,8 @@ public abstract class InGameHudMixin {
         // and at last I draw the armour items
         int i = 0;
         for (ItemStack stack : armorItems) {
-            if (!stack.isEmpty()) {
-                this.renderHotbarItem(context, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, tickCounter, player, stack, i + 1);
-            }
-
-            if (!stack.isEmpty() || config.getWidgetShown() != ArmorHudConfig.WidgetShown.NOT_EMPTY) {
-                i++;
-            }
+            this.renderHotbarItem(context, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, tickCounter, player, stack, i + 1);
+            i++;
         }
 
         // remove my translations

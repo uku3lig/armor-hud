@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -29,6 +30,23 @@ public final class ArmorHudMod implements ClientModInitializer {
     @Nullable
     public static PlayerEntity getCameraPlayer() {
         return MinecraftClient.getInstance().getCameraEntity() instanceof PlayerEntity player ? player : null;
+    }
+
+    public static List<ItemStack> getArmorItems(PlayerEntity player) {
+        Stream<ItemStack> items = ARMOR_SLOTS.stream().map(i -> player.getInventory().getStack(i));
+        items = switch (manager.getConfig().getWidgetShown()) {
+            case ALWAYS, IF_ANY_PRESENT -> items;
+            case NOT_EMPTY -> items.filter(s -> !s.isEmpty());
+            case DAMAGED_PIECES -> items.filter(ArmorHudMod::shouldShowWarning);
+        };
+        List<ItemStack> itemList = items.toList();
+
+        if (manager.getConfig().getWidgetShown() == ArmorHudConfig.WidgetShown.IF_ANY_PRESENT
+                && itemList.stream().allMatch(ItemStack::isEmpty)) {
+            return Collections.emptyList();
+        } else {
+            return itemList;
+        }
     }
 
     public static boolean shouldShowWarning(ItemStack stack) {

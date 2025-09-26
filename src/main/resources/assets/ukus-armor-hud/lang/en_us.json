@@ -28,6 +28,7 @@
   "armorhud.option.always": "Always",
   "armorhud.option.ifAnyPresent": "If Any Present",
   "armorhud.option.notEmpty": "Not Empty",
+  "armorhud.option.damagedPieces": "Damaged Pieces",
   "armorhud.option.roundedCorners": "Rounded Corners",
   "armorhud.option.rounded": "Rounded",
   "armorhud.keybind.toggle": "Toggle Armor Hud",
