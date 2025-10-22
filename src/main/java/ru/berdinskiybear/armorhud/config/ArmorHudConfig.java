@@ -25,7 +25,7 @@ public class ArmorHudConfig implements Serializable {
     private boolean pushBossbars = true;
     private boolean pushStatusEffectIcons = true;
     private boolean pushSubtitles = true;
-    private boolean reversed = true;
+    private boolean reversed = false;
     private boolean iconsShown = true;
     private boolean warningShown = true;
     private int minDurabilityValue = 5;
