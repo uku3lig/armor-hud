@@ -88,8 +88,8 @@ public class ArmorHudConfig implements Serializable {
     @Getter
     @AllArgsConstructor
     public enum Orientation implements TranslatableOption {
-        HORIZONTAL(0, "horiz"),
-        VERTICAL(1, "vert");
+        HORIZONTAL(0, "armorhud.option.horizontal"),
+        VERTICAL(1, "armorhud.option.vertical");
 
         private final int id;
         private final String translationKey;

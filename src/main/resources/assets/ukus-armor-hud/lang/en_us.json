@@ -18,6 +18,7 @@
   "armorhud.option.minDuraValue": "Min Durability",
   "armorhud.option.minDuraPercent": "Min Durability",
   "armorhud.option.iconBobIntensity": "Icon Bob Intensity",
+  "armorhud.option.orientation": "Orientation",
   "armorhud.option.topCenter": "Top Center",
   "armorhud.option.top": "Top",
   "armorhud.option.bottom": "Bottom",
@@ -32,6 +33,8 @@
   "armorhud.option.roundedCorners": "Rounded Corners",
   "armorhud.option.rounded": "Rounded",
   "armorhud.option.none": "None",
+  "armorhud.option.horizontal": "Horizontal",
+  "armorhud.option.vertical": "Vertical",
   "armorhud.keybind.toggle": "Toggle Armor Hud",
   "armorhud.keybind.toggle.msg": "Armor Hud toggled"
 }
