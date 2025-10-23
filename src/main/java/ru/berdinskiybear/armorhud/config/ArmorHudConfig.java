@@ -21,6 +21,7 @@ public class ArmorHudConfig implements Serializable {
     private int offsetX = 0;
     private int offsetY = 0;
     private Style style = Style.HOTBAR;
+    private Orientation orientation = Orientation.HORIZONTAL;
     private WidgetShown widgetShown = WidgetShown.NOT_EMPTY;
     private OffhandSlotBehavior offhandSlotBehavior = OffhandSlotBehavior.ADHERE;
     private boolean pushBossbars = true;
@@ -79,6 +80,16 @@ public class ArmorHudConfig implements Serializable {
         ROUNDED_CORNERS(1, "armorhud.option.roundedCorners"),
         ROUNDED(2, "armorhud.option.rounded"),
         NONE(3, "armorhud.option.none");
+
+        private final int id;
+        private final String translationKey;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum Orientation implements TranslatableOption {
+        HORIZONTAL(0, "horiz"),
+        VERTICAL(1, "vert");
 
         private final int id;
         private final String translationKey;

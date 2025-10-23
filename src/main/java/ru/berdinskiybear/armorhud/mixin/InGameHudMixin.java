@@ -96,9 +96,7 @@ public abstract class InGameHudMixin {
             armorItems = armorItems.reversed();
         }
 
-        // push them matrices :3
         context.getMatrices().pushMatrix();
-        // context.getMatrices().translate(0, 0, 200);
 
         // hotbar offset is relative to the bar, so when we are on the left it needs to be flipped
         // and on the right side, we need to flip the offset, except when anchored to the hotbar
@@ -114,11 +112,6 @@ public abstract class InGameHudMixin {
 
         final int verticalMultiplier = switch (config.getAnchor()) {
             case TOP, TOP_CENTER -> 1;
-            case BOTTOM, HOTBAR -> -1;
-        };
-
-        final int verticalOffsetMultiplier = switch (config.getAnchor()) {
-            case TOP, TOP_CENTER -> 0;
             case BOTTOM, HOTBAR -> -1;
         };
 
@@ -138,7 +131,10 @@ public abstract class InGameHudMixin {
             }
         };
 
-        final int widgetWidth = WIDTH + ((this.armorItems.size() - 1) * STEP);
+        final int textureWidth = WIDTH + ((this.armorItems.size() - 1) * STEP);
+
+        final int widgetWidth = config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL ? WIDTH : textureWidth;
+        final int widgetHeight = config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL ? textureWidth : HEIGHT;
 
         final int armorWidgetX = config.getOffsetX() * sideMultiplier + switch (config.getAnchor()) {
             case TOP_CENTER -> context.getScaledWindowWidth() / 2 - (widgetWidth / 2);
@@ -148,30 +144,35 @@ public abstract class InGameHudMixin {
         };
 
         final int armorWidgetY = config.getOffsetY() * verticalMultiplier + switch (config.getAnchor()) {
-            case BOTTOM, HOTBAR -> context.getScaledWindowHeight() - HEIGHT;
+            case BOTTOM, HOTBAR -> context.getScaledWindowHeight() - widgetHeight;
             case TOP, TOP_CENTER -> 0;
         };
 
         // here I draw the slots
         context.getMatrices().pushMatrix();
-        // context.getMatrices().translate(0, 0, -91);
+        context.getMatrices().translate(armorWidgetX, armorWidgetY);
+
+        if (config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL) {
+            context.getMatrices().rotate(org.joml.Math.toRadians(90f)).translate(0, -22);
+        }
+
         switch (config.getStyle()) {
             case HOTBAR -> {
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 0, 0, armorWidgetX, armorWidgetY, widgetWidth - 3, HEIGHT);
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 0, 0, 0, 0, textureWidth - 3, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, textureWidth - 3, 0, 3, HEIGHT);
             }
             case ROUNDED_CORNERS -> {
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, 3, HEIGHT);
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 3, 0, armorWidgetX + 3, armorWidgetY, widgetWidth - 6, HEIGHT);
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, WIDTH - 3, 1, armorWidgetX + widgetWidth - 3, armorWidgetY, 3, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, 3, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 3, 0, 3, 0, textureWidth - 6, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, WIDTH - 3, 1, textureWidth - 3, 0, 3, HEIGHT);
             }
             case ROUNDED -> {
                 int borderWidth = (WIDTH - STEP) / 2;
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX, armorWidgetY, borderWidth, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, borderWidth, HEIGHT);
                 for (int i = 0; i < this.armorItems.size(); i++) {
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, armorWidgetX + borderWidth + i * STEP, armorWidgetY, STEP, HEIGHT);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, borderWidth + i * STEP, 0, STEP, HEIGHT);
                 }
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, armorWidgetX + widgetWidth - borderWidth, armorWidgetY, borderWidth, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, textureWidth - borderWidth, 0, borderWidth, HEIGHT);
             }
             case NONE -> {
                 // nothing to draw ^_^
@@ -181,8 +182,13 @@ public abstract class InGameHudMixin {
 
         for (int i = 0; i < armorItems.size(); i++) {
             ItemStack stack = armorItems.get(i);
-            int slotX = armorWidgetX + (STEP * i);
+            int slotX = armorWidgetX;
             int slotY = armorWidgetY;
+
+            switch (config.getOrientation()) {
+                case HORIZONTAL -> slotX += (STEP * i);
+                case VERTICAL -> slotY += (STEP * i);
+            }
 
             // here I blend in slot icons if so tells the current config
             if (config.isIconsShown() && config.getWidgetShown().shouldDrawEmptySlots() && stack.isEmpty()) {
@@ -196,8 +202,31 @@ public abstract class InGameHudMixin {
 
             // here I draw warning icons if necessary
             if (config.isWarningShown() && ArmorHudMod.shouldShowWarning(stack)) {
-                int x = slotX + WARNING_OFFSET;
-                int y = slotY + (HEIGHT * (verticalOffsetMultiplier + 1)) + (8 * verticalOffsetMultiplier);
+                int x = slotX;
+                int y = slotY;
+
+                switch (config.getOrientation()) {
+                    case HORIZONTAL -> {
+                        final int verticalOffsetMultiplier = switch (config.getAnchor()) {
+                            case TOP, TOP_CENTER -> 0;
+                            case BOTTOM, HOTBAR -> -1;
+                        };
+
+                        x += WARNING_OFFSET;
+                        y += (HEIGHT * (verticalOffsetMultiplier + 1)) + (8 * verticalOffsetMultiplier);
+                    }
+                    case VERTICAL -> {
+                        // when anchoring to the hotbar, we want the warning to be on the other side to avoid clipping with the hotbar
+                        Arm warningSide = config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR ? config.getSide().getOpposite() : config.getSide();
+                        final int horizontalOffsetMultiplier = switch (warningSide) {
+                            case LEFT -> 0;
+                            case RIGHT -> -1;
+                        };
+
+                        x += (WIDTH * (horizontalOffsetMultiplier + 1)) + (8 * horizontalOffsetMultiplier);
+                        y += WARNING_OFFSET;
+                    }
+                }
 
                 if (config.getWarningBobIntensity() != 0) {
                     int intensity = config.getWarningBobIntensity();

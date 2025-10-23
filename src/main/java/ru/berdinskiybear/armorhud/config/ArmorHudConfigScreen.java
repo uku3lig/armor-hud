@@ -18,11 +18,12 @@ public class ArmorHudConfigScreen extends AbstractConfigScreen<ArmorHudConfig> {
 
     @Override
     protected WidgetCreator[] getWidgets(ArmorHudConfig config) {
-        return new WidgetCreator[] {
+        return new WidgetCreator[]{
                 CyclingOption.ofBoolean("armorhud.option.enabled", config.isEnabled(), config::setEnabled),
                 CyclingOption.ofTranslatableEnum("armorhud.option.anchor", ArmorHudConfig.Anchor.class, config.getAnchor(), config::setAnchor),
                 CyclingOption.ofTranslatableEnum("armorhud.option.side", Arm.class, config.getSide(), config::setSide),
                 CyclingOption.ofTranslatableEnum("armorhud.option.style", ArmorHudConfig.Style.class, config.getStyle(), config::setStyle),
+                CyclingOption.ofTranslatableEnum("armorhud.option.orientation", ArmorHudConfig.Orientation.class, config.getOrientation(), config::setOrientation),
                 CyclingOption.ofTranslatableEnum("armorhud.option.widgetShown", ArmorHudConfig.WidgetShown.class, config.getWidgetShown(), config::setWidgetShown),
                 CyclingOption.ofTranslatableEnum("armorhud.option.offhandSlotBehavior", ArmorHudConfig.OffhandSlotBehavior.class, config.getOffhandSlotBehavior(), config::setOffhandSlotBehavior),
                 CyclingOption.ofBoolean("armorhud.option.pushBossbars", config.isPushBossbars(), config::setPushBossbars),
