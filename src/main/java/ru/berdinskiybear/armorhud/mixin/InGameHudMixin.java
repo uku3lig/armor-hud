@@ -178,51 +178,33 @@ public abstract class InGameHudMixin {
         }
         context.getMatrices().popMatrix();
 
-        // here I draw warning icons if necessary
-        if (config.isWarningShown()) {
-            context.getMatrices().pushMatrix();
-            // context.getMatrices().translate(0, 0, 90);
+        for (int i = 0; i < armorItems.size(); i++) {
+            ItemStack stack = armorItems.get(i);
+            int slotX = armorWidgetX + (STEP * i);
+            int slotY = armorWidgetY;
 
-            int i = 0;
-            for (ItemStack stack : armorItems) {
-                if (ArmorHudMod.shouldShowWarning(stack)) {
-                    int x = armorWidgetX + (STEP * i) + WARNING_OFFSET;
-                    int y = armorWidgetY + (HEIGHT * (verticalOffsetMultiplier + 1)) + (8 * verticalOffsetMultiplier);
-
-                    if (config.getWarningBobIntensity() != 0) {
-                        int intensity = config.getWarningBobIntensity();
-                        y += (int) (this.random.nextInt(intensity) - Math.ceil(intensity / 2F));
-                    }
-
-                    context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x, y, 0, 0, 8, 8, 8, 8);
-                }
-                i++;
+            // here I blend in slot icons if so tells the current config
+            if (config.isIconsShown() && config.getWidgetShown().shouldDrawEmptySlots() && stack.isEmpty()) {
+                int slotIndex = config.isReversed() ? 3 - i : i;
+                Identifier identifier = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES.get(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[slotIndex]);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, identifier, slotX + 3, slotY + 3, 16, 16);
             }
 
-            context.getMatrices().popMatrix();
-        }
+            // here I draw the armour items
+            this.renderHotbarItem(context, slotX + 3, slotY + 3, tickCounter, player, stack, i + 1);
 
-        // here I blend in slot icons if so tells the current config
-        if (config.isIconsShown() && config.getWidgetShown().shouldDrawEmptySlots()) {
-            context.getMatrices().pushMatrix();
-            // context.getMatrices().translate(0, 0, -90);
+            // here I draw warning icons if necessary
+            if (config.isWarningShown() && ArmorHudMod.shouldShowWarning(stack)) {
+                int x = slotX + WARNING_OFFSET;
+                int y = slotY + (HEIGHT * (verticalOffsetMultiplier + 1)) + (8 * verticalOffsetMultiplier);
 
-            for (int i = 0; i < armorItems.size(); i++) {
-                if (armorItems.get(i).isEmpty()) {
-                    int slotIndex = config.isReversed() ? 3 - i : i;
-                    Identifier identifier = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES.get(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[slotIndex]);
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, identifier, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, 16, 16);
+                if (config.getWarningBobIntensity() != 0) {
+                    int intensity = config.getWarningBobIntensity();
+                    y += (int) (this.random.nextInt(intensity) - Math.ceil(intensity / 2F));
                 }
+
+                context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x, y, 0, 0, 8, 8, 8, 8);
             }
-
-            context.getMatrices().popMatrix();
-        }
-
-        // and at last I draw the armour items
-        int i = 0;
-        for (ItemStack stack : armorItems) {
-            this.renderHotbarItem(context, armorWidgetX + (STEP * i) + 3, armorWidgetY + 3, tickCounter, player, stack, i + 1);
-            i++;
         }
 
         // remove my translations
