@@ -21,7 +21,7 @@ public class SubtitlesHudMixin {
     private int offset = 0;
 
     // doing the calculation here allows to calculate only once, since there is one translate call for each subtitle
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Ljava/lang/String;)I", ordinal = 3, shift = At.Shift.BY, by = 4))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Ljava/lang/String;)I", ordinal = 3))
     public void calculateOffset(DrawContext context, CallbackInfo ci) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled() || !config.isPushSubtitles() || config.getAnchor() != ArmorHudConfig.Anchor.BOTTOM
