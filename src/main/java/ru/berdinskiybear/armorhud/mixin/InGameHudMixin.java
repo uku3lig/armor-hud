@@ -9,6 +9,7 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profilers;
@@ -102,8 +103,8 @@ public abstract class InGameHudMixin {
         // hotbar offset is relative to the bar, so when we are on the left it needs to be flipped
         // and on the right side, we need to flip the offset, except when anchored to the hotbar
         final int sideMultiplier, sideOffsetMultiplier;
-        if ((config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR && config.getSide() == ArmorHudConfig.Side.LEFT)
-                || (config.getAnchor() != ArmorHudConfig.Anchor.HOTBAR && config.getSide() == ArmorHudConfig.Side.RIGHT)) {
+        if ((config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR && config.getSide() == Arm.LEFT)
+                || (config.getAnchor() != ArmorHudConfig.Anchor.HOTBAR && config.getSide() == Arm.RIGHT)) {
             sideMultiplier = -1;
             sideOffsetMultiplier = -1;
         } else {
@@ -125,7 +126,7 @@ public abstract class InGameHudMixin {
             case ALWAYS_IGNORE -> 0;
             case ALWAYS_LEAVE_SPACE -> Math.max(OFFHAND_OFFSET, ATTACK_INDICATOR_OFFSET);
             case ADHERE -> {
-                if (player.getMainArm().getOpposite() == config.getSide().asArm()) {
+                if (player.getMainArm().getOpposite() == config.getSide()) {
                     if (!player.getOffHandStack().isEmpty()) {
                         yield OFFHAND_OFFSET;
                     } else if (this.client.options.getAttackIndicator().getValue() == AttackIndicator.HOTBAR) {
@@ -215,7 +216,7 @@ public abstract class InGameHudMixin {
     public void calculateStatusEffectIconsOffset(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled() || !config.isPushStatusEffectIcons() || config.getAnchor() != ArmorHudConfig.Anchor.TOP
-                || config.getSide() != ArmorHudConfig.Side.RIGHT) return;
+                || config.getSide() != Arm.RIGHT) return;
 
         PlayerEntity player = this.getCameraPlayer();
         if (player == null) return;

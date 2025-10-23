@@ -4,6 +4,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.SubtitlesHud;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Arm;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,7 +25,7 @@ public class SubtitlesHudMixin {
     public void calculateOffset(DrawContext context, CallbackInfo ci) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled() || !config.isPushSubtitles() || config.getAnchor() != ArmorHudConfig.Anchor.BOTTOM
-                || config.getSide() != ArmorHudConfig.Side.RIGHT) return;
+                || config.getSide() != Arm.RIGHT) return;
 
         PlayerEntity player = ArmorHudMod.getCameraPlayer();
         if (player == null) return;

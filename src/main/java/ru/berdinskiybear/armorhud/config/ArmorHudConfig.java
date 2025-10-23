@@ -16,7 +16,8 @@ import java.io.Serializable;
 public class ArmorHudConfig implements Serializable {
     private boolean enabled = true;
     private Anchor anchor = Anchor.HOTBAR;
-    private Side side = Side.LEFT;
+    // doing a little trolling by using the arm class, it only has left right like i need
+    private Arm side = Arm.LEFT;
     private int offsetX = 0;
     private int offsetY = 0;
     private Style style = Style.HOTBAR;
@@ -42,25 +43,6 @@ public class ArmorHudConfig implements Serializable {
 
         private final int id;
         private final String translationKey;
-    }
-
-    public enum Side implements TranslatableOption {
-        RIGHT,
-        LEFT;
-
-        public Arm asArm() {
-            return this == LEFT ? Arm.LEFT : Arm.RIGHT;
-        }
-
-        @Override
-        public int getId() {
-            return asArm().getId();
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return asArm().getTranslationKey();
-        }
     }
 
     @Getter
