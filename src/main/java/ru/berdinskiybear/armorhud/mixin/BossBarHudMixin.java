@@ -1,40 +1,47 @@
 package ru.berdinskiybear.armorhud.mixin;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.BossBarHud;
+import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.berdinskiybear.armorhud.ArmorHudMod;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
-import java.util.List;
+import java.util.Optional;
 
 @Mixin(BossBarHud.class)
 public class BossBarHudMixin {
-    @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 1)
-    public int pushBossBars(int y) {
-        final int orig = y;
+    @Unique
+    private int offset = 0;
+
+    @Inject(method = "render", at = @At("HEAD"))
+    public void calculateOffset(DrawContext context, CallbackInfo ci) {
+        this.offset = 0;
 
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled() || !config.isPushBossbars() || config.getAnchor() != ArmorHudConfig.Anchor.TOP_CENTER)
-            return y;
+            return;
 
         PlayerEntity player = ArmorHudMod.getCameraPlayer();
-        if (player == null) return y;
-        List<ItemStack> armorItems = ArmorHudMod.getArmorItems(player);
+        if (player == null) return;
+        Optional<Rect2i> rect = ArmorHudMod.getWidgetRect(context, player);
+        if (rect.isEmpty()) return;
 
-        if (!armorItems.isEmpty() || config.getWidgetShown() == ArmorHudConfig.WidgetShown.ALWAYS) {
-            y += 22 + config.getOffsetY();
-            if (config.isWarningShown() && armorItems.stream().anyMatch(ArmorHudMod::shouldShowWarning)) {
-                y += 10;
-                if (config.getWarningBobIntensity() != 0) {
-                    y += 7;
-                }
-            }
+
+        this.offset = rect.get().getY() + rect.get().getHeight();
+        if (config.isWarningShown() && config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
+            this.offset += 10 + config.getWarningBobIntensity();
         }
+    }
 
-        return Math.max(y, orig);
+    @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 1)
+    public int pushBossBars(int y) {
+        return y + this.offset;
     }
 }
