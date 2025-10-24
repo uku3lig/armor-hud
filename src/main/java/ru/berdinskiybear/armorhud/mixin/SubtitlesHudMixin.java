@@ -33,7 +33,8 @@ public class SubtitlesHudMixin {
         Optional<Rect2i> rect = ArmorHudMod.getEffectiveWidgetRect(context, player);
         if (rect.isEmpty()) return;
 
-        this.offset = rect.get().getHeight();
+        // The subtitles widget is approx 25 pixels above the bottom of the screen
+        this.offset = Math.max(rect.get().getHeight() - 25, 0);
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;", shift = At.Shift.AFTER, remap = false))
