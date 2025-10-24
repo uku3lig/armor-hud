@@ -1,5 +1,6 @@
 package ru.berdinskiybear.armorhud.mixin;
 
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -10,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profilers;
 import org.spongepowered.asm.mixin.Final;
@@ -42,6 +44,9 @@ public abstract class InGameHudMixin {
 
     @Shadow
     protected abstract void renderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed);
+
+    @Shadow
+    public abstract TextRenderer getTextRenderer();
 
     @Inject(method = "renderHotbar", at = @At("TAIL"))
     public void renderArmorHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
@@ -109,52 +114,70 @@ public abstract class InGameHudMixin {
 
         for (int i = 0; i < armorItems.size(); i++) {
             ItemStack stack = armorItems.get(i);
-            int slotX = rect.get().getX();
-            int slotY = rect.get().getY();
+            int x = rect.get().getX();
+            int y = rect.get().getY();
 
             switch (config.getOrientation()) {
-                case HORIZONTAL -> slotX += (STEP * i);
-                case VERTICAL -> slotY += (STEP * i);
+                case HORIZONTAL -> x += (STEP * i);
+                case VERTICAL -> y += (STEP * i);
             }
 
             // here I blend in slot icons if so tells the current config
             if (config.isIconsShown() && config.getWidgetShown().shouldDrawEmptySlots() && stack.isEmpty()) {
                 int slotIndex = config.isReversed() ? 3 - i : i;
                 Identifier identifier = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES.get(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[slotIndex]);
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, identifier, slotX + 3, slotY + 3, 16, 16);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, identifier, x + 3, y + 3, 16, 16);
             }
 
             // here I draw the armour items
-            this.renderHotbarItem(context, slotX + 3, slotY + 3, tickCounter, player, stack, i + 1);
+            this.renderHotbarItem(context, x + 3, y + 3, tickCounter, player, stack, i + 1);
+
+            // when anchoring to the hotbar, we want the warning to be on the other side to avoid clipping with the hotbar
+            Arm extrasSide = config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR ? config.getSide() : config.getSide().getOpposite();
+
+            if (config.getAnchor().isTop() && config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
+                y += HEIGHT;
+            } else if (extrasSide == Arm.RIGHT && config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL) {
+                x += WIDTH;
+            }
+
+            if (config.getDurabilityDisplay() == ArmorHudConfig.DurabilityDisplay.NUMERIC) {
+                String dura = String.valueOf(stack.getMaxDamage() - stack.getDamage());
+                int textHeight = this.getTextRenderer().fontHeight;
+
+                if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
+                    if (!config.getAnchor().isTop()) y -= textHeight;
+                    context.drawCenteredTextWithShadow(this.getTextRenderer(), dura, x + (WIDTH / 2), y, ColorHelper.fullAlpha(stack.getItemBarColor()));
+                    if (config.getAnchor().isTop()) y += textHeight;
+                } else {
+                    int textWidth = this.getTextRenderer().getWidth(dura) + 2;
+                    int textY = (HEIGHT - textHeight) / 2;
+
+                    if (extrasSide == Arm.LEFT) x -= textWidth;
+                    context.drawTextWithShadow(this.getTextRenderer(), dura, x + 1, y + textY, ColorHelper.fullAlpha(stack.getItemBarColor()));
+                    if (extrasSide == Arm.RIGHT) x += textWidth;
+                }
+            }
 
             // here I draw warning icons if necessary
             if (config.isWarningShown() && ArmorHudMod.shouldShowWarning(stack)) {
-                int x = slotX;
-                int y = slotY;
-
-                switch (config.getOrientation()) {
-                    case HORIZONTAL -> {
-                        final int verticalOffsetMultiplier = config.getAnchor().isTop() ? 0 : -1;
-
-                        x += WARNING_OFFSET;
-                        y += (HEIGHT * (verticalOffsetMultiplier + 1)) + (8 * verticalOffsetMultiplier);
-                    }
-                    case VERTICAL -> {
-                        // when anchoring to the hotbar, we want the warning to be on the other side to avoid clipping with the hotbar
-                        Arm warningSide = config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR ? config.getSide().getOpposite() : config.getSide();
-                        final int horizontalOffsetMultiplier = warningSide == Arm.LEFT ? 0 : -1;
-
-                        x += (WIDTH * (horizontalOffsetMultiplier + 1)) + (8 * horizontalOffsetMultiplier);
-                        y += WARNING_OFFSET;
-                    }
-                }
-
                 if (config.getWarningBobIntensity() != 0) {
                     int intensity = config.getWarningBobIntensity();
                     y += (int) (this.random.nextInt(intensity) - Math.ceil(intensity / 2F));
                 }
 
-                context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x, y, 0, 0, 8, 8, 8, 8);
+                if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
+                    if (!config.getAnchor().isTop()) y -= WARNING_SIZE + 2;
+
+                    int warnX = (WIDTH - WARNING_SIZE) / 2;
+                    context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + warnX, y + 1, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
+                } else {
+                    if (extrasSide == Arm.LEFT) x -= WARNING_SIZE + 2;
+
+                    int warnY = (HEIGHT - WARNING_SIZE) / 2;
+                    context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + 1, y + warnY, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
+                }
+
             }
         }
     }

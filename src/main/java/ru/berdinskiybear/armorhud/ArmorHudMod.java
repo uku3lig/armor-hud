@@ -35,7 +35,7 @@ public final class ArmorHudMod implements ClientModInitializer {
     public static final int HOTBAR_OFFSET = 98;
     public static final int OFFHAND_OFFSET = 29;
     public static final int ATTACK_INDICATOR_OFFSET = 23;
-    public static final int WARNING_OFFSET = 7;
+    public static final int WARNING_SIZE = 8;
 
     public static final List<Integer> ARMOR_SLOTS = Stream.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
             .map(s -> s.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE))
@@ -114,18 +114,24 @@ public final class ArmorHudMod implements ClientModInitializer {
         Optional<Rect2i> rect = getWidgetRect(context, player);
         if (rect.isEmpty()) return Optional.empty();
         // TODO should probably extend the bbox horizontally too
-        if (config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL) return rect;
-        Rect2i unwrapped = rect.get();
+        if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
+            int additionalHeight = 0;
 
-        if (config.isWarningShown()) {
-            int additionalHeight = 10 + (config.getWarningBobIntensity() / 2);
-            unwrapped.setHeight(unwrapped.getHeight() + additionalHeight);
+            if (config.isWarningShown()) {
+                additionalHeight += WARNING_SIZE + 2 + (config.getWarningBobIntensity() / 2);
+            }
+
+            if (config.getDurabilityDisplay() == ArmorHudConfig.DurabilityDisplay.NUMERIC) {
+                additionalHeight += MinecraftClient.getInstance().textRenderer.fontHeight;
+            }
+
+            rect.get().setHeight(rect.get().getHeight() + additionalHeight);
             if (config.getAnchor() == ArmorHudConfig.Anchor.BOTTOM || config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR) {
-                unwrapped.setY(unwrapped.getY() - additionalHeight);
+                rect.get().setY(rect.get().getY() - additionalHeight);
             }
         }
 
-        return Optional.of(unwrapped);
+        return rect;
     }
 
     public static List<ItemStack> getArmorItems(PlayerEntity player) {

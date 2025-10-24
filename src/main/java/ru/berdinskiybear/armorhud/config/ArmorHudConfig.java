@@ -24,6 +24,7 @@ public class ArmorHudConfig implements Serializable {
     private Orientation orientation = Orientation.HORIZONTAL;
     private WidgetShown widgetShown = WidgetShown.NOT_EMPTY;
     private OffhandSlotBehavior offhandSlotBehavior = OffhandSlotBehavior.ADHERE;
+    private DurabilityDisplay durabilityDisplay = DurabilityDisplay.BAR;
     private boolean pushBossbars = true;
     private boolean pushStatusEffectIcons = true;
     private boolean pushSubtitles = true;
@@ -94,6 +95,16 @@ public class ArmorHudConfig implements Serializable {
     public enum Orientation implements TranslatableOption {
         HORIZONTAL(0, "armorhud.option.horizontal"),
         VERTICAL(1, "armorhud.option.vertical");
+
+        private final int id;
+        private final String translationKey;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum DurabilityDisplay implements TranslatableOption {
+        BAR(0, "armorhud.option.bar"),
+        NUMERIC(1, "armorhud.option.numeric");
 
         private final int id;
         private final String translationKey;

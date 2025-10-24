@@ -26,6 +26,7 @@ public class ArmorHudConfigScreen extends AbstractConfigScreen<ArmorHudConfig> {
                 CyclingOption.ofTranslatableEnum("armorhud.option.orientation", ArmorHudConfig.Orientation.class, config.getOrientation(), config::setOrientation),
                 CyclingOption.ofTranslatableEnum("armorhud.option.widgetShown", ArmorHudConfig.WidgetShown.class, config.getWidgetShown(), config::setWidgetShown),
                 CyclingOption.ofTranslatableEnum("armorhud.option.offhandSlotBehavior", ArmorHudConfig.OffhandSlotBehavior.class, config.getOffhandSlotBehavior(), config::setOffhandSlotBehavior),
+                CyclingOption.ofTranslatableEnum("armorhud.option.durabilityDisplay", ArmorHudConfig.DurabilityDisplay.class, config.getDurabilityDisplay(), config::setDurabilityDisplay),
                 CyclingOption.ofBoolean("armorhud.option.pushBossbars", config.isPushBossbars(), config::setPushBossbars),
                 CyclingOption.ofBoolean("armorhud.option.pushIcons", config.isPushStatusEffectIcons(), config::setPushStatusEffectIcons),
                 CyclingOption.ofBoolean("armorhud.option.pushSubtitles", config.isPushSubtitles(), config::setPushSubtitles),
