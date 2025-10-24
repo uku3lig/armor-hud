@@ -30,13 +30,10 @@ public class SubtitlesHudMixin {
 
         PlayerEntity player = ArmorHudMod.getCameraPlayer();
         if (player == null) return;
-        Optional<Rect2i> rect = ArmorHudMod.getWidgetRect(context, player);
+        Optional<Rect2i> rect = ArmorHudMod.getEffectiveWidgetRect(context, player);
         if (rect.isEmpty()) return;
 
         this.offset = rect.get().getHeight();
-        if (config.isWarningShown() && config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
-            this.offset += 10 + config.getWarningBobIntensity();
-        }
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;", shift = At.Shift.AFTER, remap = false))

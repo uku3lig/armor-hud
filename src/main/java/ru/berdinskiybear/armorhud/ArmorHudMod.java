@@ -46,6 +46,9 @@ public final class ArmorHudMod implements ClientModInitializer {
         return MinecraftClient.getInstance().getCameraEntity() instanceof PlayerEntity player ? player : null;
     }
 
+    /**
+     * Returns the bounding box of the widget itself, <strong>excluding</strong> "external" information like warning icon
+     */
     public static Optional<Rect2i> getWidgetRect(DrawContext context, PlayerEntity player) {
         ArmorHudConfig config = manager.getConfig();
         List<ItemStack> armorItems = getArmorItems(player);
@@ -104,6 +107,28 @@ public final class ArmorHudMod implements ClientModInitializer {
         };
 
         return Optional.of(new Rect2i(armorWidgetX, armorWidgetY, widgetWidth, widgetHeight));
+    }
+
+    /**
+     * Returns the effective bounding box, <strong>including</strong> "external" information like warning icon
+     */
+    public static Optional<Rect2i> getEffectiveWidgetRect(DrawContext context, PlayerEntity player) {
+        ArmorHudConfig config = manager.getConfig();
+        Optional<Rect2i> rect = getWidgetRect(context, player);
+        if (rect.isEmpty()) return Optional.empty();
+        // TODO should probably extend the bbox horizontally too
+        if (config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL) return rect;
+        Rect2i unwrapped = rect.get();
+
+        if (config.isWarningShown()) {
+            int additionalHeight = 10 + (config.getWarningBobIntensity() / 2);
+            unwrapped.setHeight(unwrapped.getHeight() + additionalHeight);
+            if (config.getAnchor() == ArmorHudConfig.Anchor.BOTTOM || config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR) {
+                unwrapped.setY(unwrapped.getY() - additionalHeight);
+            }
+        }
+
+        return Optional.of(unwrapped);
     }
 
     public static List<ItemStack> getArmorItems(PlayerEntity player) {

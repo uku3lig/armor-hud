@@ -175,15 +175,10 @@ public abstract class InGameHudMixin {
         PlayerEntity player = ArmorHudMod.getCameraPlayer();
         if (player == null) return;
 
-        Optional<Rect2i> rect = getWidgetRect(context, player);
+        Optional<Rect2i> rect = ArmorHudMod.getEffectiveWidgetRect(context, player);
         if (rect.isEmpty()) return;
 
-        int newShift = rect.get().getY() + rect.get().getHeight();
-        if (config.isWarningShown() && config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
-            newShift += 10 + config.getWarningBobIntensity();
-        }
-
-        this.shift = Math.max(newShift, 0);
+        this.shift = rect.get().getY() + rect.get().getHeight();
     }
 
     @ModifyVariable(method = "renderStatusEffectOverlay", at = @At(value = "STORE"), ordinal = 3)

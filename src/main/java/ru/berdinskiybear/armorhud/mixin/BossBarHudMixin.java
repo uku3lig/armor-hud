@@ -30,14 +30,10 @@ public class BossBarHudMixin {
 
         PlayerEntity player = ArmorHudMod.getCameraPlayer();
         if (player == null) return;
-        Optional<Rect2i> rect = ArmorHudMod.getWidgetRect(context, player);
+        Optional<Rect2i> rect = ArmorHudMod.getEffectiveWidgetRect(context, player);
         if (rect.isEmpty()) return;
 
-
         this.offset = rect.get().getY() + rect.get().getHeight();
-        if (config.isWarningShown() && config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
-            this.offset += 10 + config.getWarningBobIntensity();
-        }
     }
 
     @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 1)
