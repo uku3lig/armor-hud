@@ -69,10 +69,7 @@ public final class ArmorHudMod implements ClientModInitializer {
             sideOffsetMultiplier = 0;
         }
 
-        final int verticalMultiplier = switch (config.getAnchor()) {
-            case TOP, TOP_CENTER -> 1;
-            case BOTTOM, HOTBAR -> -1;
-        };
+        final int verticalMultiplier = config.getAnchor().isTop() ? 1 : -1;
 
         final int addedHotbarOffset = switch (config.getOffhandSlotBehavior()) {
             case ALWAYS_IGNORE -> 0;

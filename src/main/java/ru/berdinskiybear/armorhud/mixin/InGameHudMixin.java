@@ -134,10 +134,7 @@ public abstract class InGameHudMixin {
 
                 switch (config.getOrientation()) {
                     case HORIZONTAL -> {
-                        final int verticalOffsetMultiplier = switch (config.getAnchor()) {
-                            case TOP, TOP_CENTER -> 0;
-                            case BOTTOM, HOTBAR -> -1;
-                        };
+                        final int verticalOffsetMultiplier = config.getAnchor().isTop() ? 0 : -1;
 
                         x += WARNING_OFFSET;
                         y += (HEIGHT * (verticalOffsetMultiplier + 1)) + (8 * verticalOffsetMultiplier);
@@ -145,10 +142,7 @@ public abstract class InGameHudMixin {
                     case VERTICAL -> {
                         // when anchoring to the hotbar, we want the warning to be on the other side to avoid clipping with the hotbar
                         Arm warningSide = config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR ? config.getSide().getOpposite() : config.getSide();
-                        final int horizontalOffsetMultiplier = switch (warningSide) {
-                            case LEFT -> 0;
-                            case RIGHT -> -1;
-                        };
+                        final int horizontalOffsetMultiplier = warningSide == Arm.LEFT ? 0 : -1;
 
                         x += (WIDTH * (horizontalOffsetMultiplier + 1)) + (8 * horizontalOffsetMultiplier);
                         y += WARNING_OFFSET;

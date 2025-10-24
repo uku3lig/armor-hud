@@ -44,6 +44,10 @@ public class ArmorHudConfig implements Serializable {
 
         private final int id;
         private final String translationKey;
+
+        public boolean isTop() {
+            return this == TOP || this == TOP_CENTER;
+        }
     }
 
     @Getter
