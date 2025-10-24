@@ -1,7 +1,7 @@
 package ru.berdinskiybear.armorhud;
 
 import lombok.Getter;
-import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.option.AttackIndicator;
@@ -11,6 +11,9 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
@@ -20,12 +23,14 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public final class ArmorHudMod implements ClientModInitializer {
+public final class ArmorHudMod implements ModInitializer {
     @Getter
     private static final ConfigManager<ArmorHudConfig> manager = ConfigManager.createDefault(ArmorHudConfig.class, "ukus-armor-hud");
 
@@ -40,6 +45,10 @@ public final class ArmorHudMod implements ClientModInitializer {
     public static final List<Integer> ARMOR_SLOTS = Stream.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
             .map(s -> s.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE))
             .toList();
+
+    public static final Identifier ARMOR_BREAKING_SOUND = Identifier.of("ukus-armor-hud", "armor_breaking");
+
+    private static List<ItemStack> lastStacks = new ArrayList<>();
 
     @Nullable
     public static PlayerEntity getCameraPlayer() {
@@ -151,6 +160,24 @@ public final class ArmorHudMod implements ClientModInitializer {
         }
     }
 
+    public static boolean shouldPlayBreakSound(PlayerEntity player) {
+        List<ItemStack> newItems = ARMOR_SLOTS.stream().map(i -> player.getInventory().getStack(i)).toList();
+
+        if (lastStacks.isEmpty()) {
+            lastStacks = newItems;
+            return false;
+        } else {
+            boolean should = IntStream.range(0, ARMOR_SLOTS.size())
+                    .anyMatch(i -> {
+                        ItemStack last = lastStacks.get(i), current = newItems.get(i);
+                        return last.getDamage() != current.getDamage() && shouldShowWarning(current);
+                    });
+
+            lastStacks = newItems;
+            return should;
+        }
+    }
+
     public static boolean shouldShowWarning(ItemStack stack) {
         if (stack.isEmpty() || !stack.isDamageable()) return false;
 
@@ -163,8 +190,10 @@ public final class ArmorHudMod implements ClientModInitializer {
     }
 
     @Override
-    public void onInitializeClient() {
+    public void onInitialize() {
         Ukutils.registerToggleBind(new KeyBinding("armorhud.keybind.toggle", GLFW.GLFW_KEY_UNKNOWN, KeyBinding.Category.create(Identifier.of("ukus-armor-hud", "key"))),
                 () -> manager.getConfig().isEnabled(), b -> manager.getConfig().setEnabled(b), Text.translatable("armorhud.keybind.toggle.msg"));
+
+        Registry.register(Registries.SOUND_EVENT, ARMOR_BREAKING_SOUND, SoundEvent.of(ARMOR_BREAKING_SOUND));
     }
 }

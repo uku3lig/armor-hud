@@ -31,8 +31,9 @@ public class ArmorHudConfig implements Serializable {
     private boolean reversed = false;
     private boolean iconsShown = true;
     private boolean warningShown = true;
-    private int minDurabilityValue = 5;
-    private double minDurabilityPercentage = 0.05;
+    private boolean playBreakSound = true;
+    private int minDurabilityValue = 20;
+    private double minDurabilityPercentage = 0.1;
     private int warningBobIntensity = 3;
 
     @Getter

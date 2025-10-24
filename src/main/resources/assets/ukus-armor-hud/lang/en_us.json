@@ -20,6 +20,7 @@
   "armorhud.option.iconBobIntensity": "Icon Bob Intensity",
   "armorhud.option.orientation": "Orientation",
   "armorhud.option.durabilityDisplay": "Durability Display",
+  "armorhud.option.playBreakSound": "Play Breaking Sound",
   "armorhud.option.topCenter": "Top Center",
   "armorhud.option.top": "Top",
   "armorhud.option.bottom": "Bottom",
@@ -39,5 +40,6 @@
   "armorhud.option.bar": "Bar",
   "armorhud.option.numeric": "Numeric",
   "armorhud.keybind.toggle": "Toggle Armor Hud",
-  "armorhud.keybind.toggle.msg": "Armor Hud toggled"
+  "armorhud.keybind.toggle.msg": "Armor Hud toggled",
+  "armorhud.subtitle.armorBreaking": "Armor Breaking"
 }

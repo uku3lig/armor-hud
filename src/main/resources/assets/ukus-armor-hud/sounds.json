@@ -1,0 +1,9 @@
+{
+  "armor_breaking": {
+    "category": "player",
+    "subtitle": "armorhud.subtitle.armorBreaking",
+    "sounds": [
+      "ukus-armor-hud:armor_breaking"
+    ]
+  }
+}

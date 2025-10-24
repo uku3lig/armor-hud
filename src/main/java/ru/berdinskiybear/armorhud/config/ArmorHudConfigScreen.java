@@ -32,12 +32,13 @@ public class ArmorHudConfigScreen extends AbstractConfigScreen<ArmorHudConfig> {
                 CyclingOption.ofBoolean("armorhud.option.pushSubtitles", config.isPushSubtitles(), config::setPushSubtitles),
                 CyclingOption.ofBoolean("armorhud.option.reversed", config.isReversed(), config::setReversed),
                 CyclingOption.ofBoolean("armorhud.option.showIcons", config.isIconsShown(), config::setIconsShown),
+                CyclingOption.ofBoolean("armorhud.option.playBreakSound", config.isPlayBreakSound(), config::setPlayBreakSound),
                 CyclingOption.ofBoolean("armorhud.option.showWarning", config.isWarningShown(), config::setWarningShown),
-                new TypedInputOption<>("armorhud.option.offsetX", String.valueOf(config.getOffsetX()), config::setOffsetX, this::getInt),
-                new TypedInputOption<>("armorhud.option.offsetY", String.valueOf(config.getOffsetY()), config::setOffsetY, this::getInt),
+                new TypedInputOption<>("armorhud.option.iconBobIntensity", String.valueOf(config.getWarningBobIntensity()), config::setWarningBobIntensity, this::getInt),
                 new TypedInputOption<>("armorhud.option.minDuraValue", String.valueOf(config.getMinDurabilityValue()), config::setMinDurabilityValue, this::getInt),
                 new SliderOption("armorhud.option.minDuraPercent", config.getMinDurabilityPercentage(), config::setMinDurabilityPercentage, SliderOption.PERCENT_VALUE_TO_TEXT),
-                new TypedInputOption<>("armorhud.option.iconBobIntensity", String.valueOf(config.getWarningBobIntensity()), config::setWarningBobIntensity, this::getInt)
+                new TypedInputOption<>("armorhud.option.offsetX", String.valueOf(config.getOffsetX()), config::setOffsetX, this::getInt),
+                new TypedInputOption<>("armorhud.option.offsetY", String.valueOf(config.getOffsetY()), config::setOffsetY, this::getInt),
         };
     }
 
