@@ -1,12 +1,13 @@
 package ru.berdinskiybear.armorhud.mixin;
 
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.SubtitlesHud;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Arm;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -17,13 +18,9 @@ import java.util.Optional;
 
 @Mixin(SubtitlesHud.class)
 public class SubtitlesHudMixin {
-    @Unique
-    private int offset = 0;
-
     // doing the calculation here allows to calculate only once, since there is one translate call for each subtitle
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Ljava/lang/String;)I", ordinal = 3))
-    public void calculateOffset(DrawContext context, CallbackInfo ci) {
-        this.offset = 0;
+    public void calculateOffset(DrawContext context, CallbackInfo ci, @Share("offset") LocalIntRef offsetRef) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled() || !config.isPushSubtitles() || config.getAnchor() != ArmorHudConfig.Anchor.BOTTOM
                 || config.getSide() != Arm.RIGHT) return;
@@ -34,11 +31,11 @@ public class SubtitlesHudMixin {
         if (rect.isEmpty()) return;
 
         // The subtitles widget is approx 25 pixels above the bottom of the screen
-        this.offset = Math.max(rect.get().getHeight() - 25, 0);
+        offsetRef.set(Math.max(rect.get().getHeight() - 25, 0));
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;", shift = At.Shift.AFTER, remap = false))
-    public void offset(DrawContext context, CallbackInfo ci) {
-        context.getMatrices().translate(0.0F, -this.offset);
+    public void offset(DrawContext context, CallbackInfo ci, @Share("offset") LocalIntRef offsetRef) {
+        context.getMatrices().translate(0.0F, -offsetRef.get());
     }
 }

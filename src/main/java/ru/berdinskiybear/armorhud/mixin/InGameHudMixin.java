@@ -1,5 +1,7 @@
 package ru.berdinskiybear.armorhud.mixin;
 
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -39,9 +41,6 @@ public abstract class InGameHudMixin {
     @Unique
     private static final Identifier WARNING_TEXTURE = Identifier.of("ukus-armor-hud", "warn.png");
 
-    @Unique
-    private int shift = 0;
-
     @Shadow
     protected abstract void renderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed);
 
@@ -68,7 +67,7 @@ public abstract class InGameHudMixin {
         PlayerEntity player = ArmorHudMod.getCameraPlayer();
         if (player == null) return;
 
-        final Optional<Rect2i> rect = getWidgetRect(context, player);
+        final Optional<Rect2i> rect = ArmorHudMod.getWidgetRect(context, player);
         // return if there is nothing to draw
         if (rect.isEmpty()) return;
 
@@ -183,8 +182,7 @@ public abstract class InGameHudMixin {
     }
 
     @Inject(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))
-    public void calculateStatusEffectIconsOffset(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        this.shift = 0;
+    public void calculateStatusEffectIconsOffset(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci, @Share("shift") LocalIntRef shiftRef) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled() || !config.isPushStatusEffectIcons() || config.getAnchor() != ArmorHudConfig.Anchor.TOP
                 || config.getSide() != Arm.RIGHT) return;
@@ -195,11 +193,11 @@ public abstract class InGameHudMixin {
         Optional<Rect2i> rect = ArmorHudMod.getEffectiveWidgetRect(context, player);
         if (rect.isEmpty()) return;
 
-        this.shift = rect.get().getY() + rect.get().getHeight();
+        shiftRef.set(rect.get().getY() + rect.get().getHeight());
     }
 
     @ModifyVariable(method = "renderStatusEffectOverlay", at = @At(value = "STORE"), ordinal = 3)
-    public int statusEffectIconsOffset(int y) {
-        return y + this.shift;
+    public int statusEffectIconsOffset(int y, @Share("shift") LocalIntRef shiftRef) {
+        return y + shiftRef.get();
     }
 }
