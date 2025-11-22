@@ -9,10 +9,10 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
@@ -23,11 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.IntStream;
+import java.util.*;
 import java.util.stream.Stream;
 
 public final class ArmorHudMod implements ModInitializer {
@@ -35,20 +31,15 @@ public final class ArmorHudMod implements ModInitializer {
     private static final ConfigManager<ArmorHudConfig> manager = ConfigManager.createDefault(ArmorHudConfig.class, "ukus-armor-hud");
 
     public static final int STEP = 20;
-    public static final int WIDTH = 22;
-    public static final int HEIGHT = 22;
+    public static final int SIZE = 22;
     public static final int HOTBAR_OFFSET = 98;
     public static final int OFFHAND_OFFSET = 29;
     public static final int ATTACK_INDICATOR_OFFSET = 23;
     public static final int WARNING_SIZE = 8;
 
-    public static final List<Integer> ARMOR_SLOTS = Stream.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
-            .map(s -> s.getOffsetEntitySlotId(PlayerInventory.MAIN_SIZE))
-            .toList();
-
     public static final Identifier ARMOR_BREAKING_SOUND = Identifier.of("ukus-armor-hud", "armor_breaking");
 
-    private static List<ItemStack> lastStacks = new ArrayList<>();
+    private static final List<ItemStack> lastStacks = new ArrayList<>(Collections.nCopies(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER.length, ItemStack.EMPTY));
 
     @Nullable
     public static PlayerEntity getCameraPlayer() {
@@ -78,10 +69,9 @@ public final class ArmorHudMod implements ModInitializer {
             sideOffsetMultiplier = 0;
         }
 
-        final int verticalMultiplier = config.getAnchor().isTop() ? 1 : -1;
-
         final int addedHotbarOffset = switch (config.getOffhandSlotBehavior()) {
             case ALWAYS_IGNORE -> 0;
+            // FIXME probably need to account for both?
             case ALWAYS_LEAVE_SPACE -> Math.max(OFFHAND_OFFSET, ATTACK_INDICATOR_OFFSET);
             case ADHERE -> {
                 if (player.getMainArm().getOpposite() == config.getSide()) {
@@ -96,20 +86,20 @@ public final class ArmorHudMod implements ModInitializer {
             }
         };
 
-        final int textureWidth = WIDTH + ((armorItems.size() - 1) * STEP);
-        final int widgetWidth = config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL ? WIDTH : textureWidth;
-        final int widgetHeight = config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL ? textureWidth : HEIGHT;
+        final int textureWidth = SIZE + ((armorItems.size() - 1) * STEP);
+        final int widgetWidth = config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL ? SIZE : textureWidth;
+        final int widgetHeight = config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL ? textureWidth : SIZE;
 
         final int armorWidgetX = config.getOffsetX() * sideMultiplier + switch (config.getAnchor()) {
-            case TOP_CENTER -> context.getScaledWindowWidth() / 2 - (widgetWidth / 2);
+            case TOP_CENTER -> (context.getScaledWindowWidth() - widgetWidth) / 2;
             case TOP, BOTTOM -> (widgetWidth - context.getScaledWindowWidth()) * sideOffsetMultiplier;
             case HOTBAR ->
                     context.getScaledWindowWidth() / 2 + ((HOTBAR_OFFSET + addedHotbarOffset) * sideMultiplier) + (widgetWidth * sideOffsetMultiplier);
         };
 
-        final int armorWidgetY = config.getOffsetY() * verticalMultiplier + switch (config.getAnchor()) {
-            case BOTTOM, HOTBAR -> context.getScaledWindowHeight() - widgetHeight;
-            case TOP, TOP_CENTER -> 0;
+        final int armorWidgetY = switch (config.getAnchor()) {
+            case BOTTOM, HOTBAR -> context.getScaledWindowHeight() - widgetHeight - config.getOffsetY();
+            case TOP, TOP_CENTER -> config.getOffsetY();
         };
 
         return Optional.of(new Rect2i(armorWidgetX, armorWidgetY, widgetWidth, widgetHeight));
@@ -120,62 +110,56 @@ public final class ArmorHudMod implements ModInitializer {
      */
     public static Optional<Rect2i> getEffectiveWidgetRect(DrawContext context, PlayerEntity player) {
         ArmorHudConfig config = manager.getConfig();
-        Optional<Rect2i> rect = getWidgetRect(context, player);
-        if (rect.isEmpty()) return Optional.empty();
-        // TODO should probably extend the bbox horizontally too
-        if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
-            int additionalHeight = 0;
 
-            if (config.isWarningShown()) {
-                additionalHeight += WARNING_SIZE + 2 + (config.getWarningBobIntensity() / 2);
+        return getWidgetRect(context, player).map(rect -> {
+            // TODO should probably extend the bbox horizontally too
+            if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
+                int additionalHeight = 0;
+
+                if (config.isWarningShown()) {
+                    additionalHeight += WARNING_SIZE + 2 + (config.getWarningBobIntensity() / 2);
+                }
+
+                if (config.getDurabilityDisplay() == ArmorHudConfig.DurabilityDisplay.NUMERIC) {
+                    additionalHeight += MinecraftClient.getInstance().textRenderer.fontHeight;
+                }
+
+                rect.setHeight(rect.getHeight() + additionalHeight);
+                if (!config.getAnchor().isTop()) {
+                    rect.setY(rect.getY() - additionalHeight);
+                }
             }
 
-            if (config.getDurabilityDisplay() == ArmorHudConfig.DurabilityDisplay.NUMERIC) {
-                additionalHeight += MinecraftClient.getInstance().textRenderer.fontHeight;
-            }
-
-            rect.get().setHeight(rect.get().getHeight() + additionalHeight);
-            if (config.getAnchor() == ArmorHudConfig.Anchor.BOTTOM || config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR) {
-                rect.get().setY(rect.get().getY() - additionalHeight);
-            }
-        }
-
-        return rect;
+            return rect;
+        });
     }
 
     public static List<ItemStack> getArmorItems(PlayerEntity player) {
-        Stream<ItemStack> items = ARMOR_SLOTS.stream().map(i -> player.getInventory().getStack(i));
+        Stream<ItemStack> items = Arrays.stream(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER).map(player::getEquippedStack);
         items = switch (manager.getConfig().getWidgetShown()) {
-            case ALWAYS, IF_ANY_PRESENT -> items;
+            case ALWAYS -> items;
+            case IF_ANY_PRESENT -> {
+                List<ItemStack> itemList = items.toList();
+                yield itemList.stream().allMatch(ItemStack::isEmpty) ? Stream.of() : itemList.stream();
+            }
             case NOT_EMPTY -> items.filter(s -> !s.isEmpty());
             case DAMAGED_PIECES -> items.filter(ArmorHudMod::shouldShowWarning);
         };
-        List<ItemStack> itemList = items.toList();
 
-        if (manager.getConfig().getWidgetShown() == ArmorHudConfig.WidgetShown.IF_ANY_PRESENT
-                && itemList.stream().allMatch(ItemStack::isEmpty)) {
-            return Collections.emptyList();
-        } else {
-            return itemList;
-        }
+        return items.toList();
     }
 
     public static boolean shouldPlayBreakSound(PlayerEntity player) {
-        List<ItemStack> newItems = ARMOR_SLOTS.stream().map(i -> player.getInventory().getStack(i)).toList();
-
-        if (lastStacks.isEmpty()) {
-            lastStacks = newItems;
-            return false;
-        } else {
-            boolean should = IntStream.range(0, ARMOR_SLOTS.size())
-                    .anyMatch(i -> {
-                        ItemStack last = lastStacks.get(i), current = newItems.get(i);
-                        return last.getDamage() != current.getDamage() && shouldShowWarning(current);
-                    });
-
-            lastStacks = newItems;
-            return should;
+        for (int i = 0; i < PlayerScreenHandler.EQUIPMENT_SLOT_ORDER.length; i++) {
+            EquipmentSlot slot = PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[i];
+            ItemStack current = player.getEquippedStack(slot);
+            ItemStack last = lastStacks.set(i, current);
+            if (last.getDamage() != current.getDamage() && shouldShowWarning(current)) {
+                return true;
+            }
         }
+
+        return false;
     }
 
     public static boolean shouldShowWarning(ItemStack stack) {

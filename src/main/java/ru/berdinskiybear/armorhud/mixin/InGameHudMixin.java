@@ -14,6 +14,7 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profilers;
 import org.spongepowered.asm.mixin.Final;
@@ -77,37 +78,44 @@ public abstract class InGameHudMixin {
             armorItems = armorItems.reversed();
         }
 
-        final int textureWidth = WIDTH + ((armorItems.size() - 1) * STEP);
+        final int textureWidth = SIZE + ((armorItems.size() - 1) * STEP);
 
         // here I draw the slots
         context.getMatrices().pushMatrix();
         context.getMatrices().translate(rect.get().getX(), rect.get().getY());
 
         if (config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL) {
-            context.getMatrices().rotate(org.joml.Math.toRadians(90f)).translate(0, -22);
+            context.getMatrices().rotate(MathHelper.HALF_PI).translate(0, -SIZE);
         }
 
         switch (config.getStyle()) {
             case HOTBAR -> {
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 0, 0, 0, 0, textureWidth - 3, HEIGHT);
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, textureWidth - 3, 0, 3, HEIGHT);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 0, 0, 0, 0, textureWidth - 3, SIZE);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, textureWidth - 3, 0, 3, SIZE);
             }
             case ROUNDED_CORNERS -> {
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, 3, HEIGHT);
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 3, 0, 3, 0, textureWidth - 6, HEIGHT);
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, WIDTH - 3, 1, textureWidth - 3, 0, 3, HEIGHT);
+                if (armorItems.size() > 1) {
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, 3, SIZE);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 3, 0, 3, 0, textureWidth - 6, SIZE);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, SIZE - 3, 1, textureWidth - 3, 0, 3, SIZE);
+                } else {
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE, SIZE);
+                }
             }
             case ROUNDED -> {
-                int borderWidth = (WIDTH - STEP) / 2;
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, borderWidth, HEIGHT);
-                for (int i = 0; i < armorItems.size(); i++) {
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, borderWidth + i * STEP, 0, STEP, HEIGHT);
+                if (armorItems.size() > 1) {
+                    int borderWidth = (SIZE - STEP) / 2;
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE - borderWidth, SIZE);
+                    // nothing happens if slots <= 2
+                    for (int i = 1; i < armorItems.size() - 1; i++) {
+                        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, borderWidth + i * STEP, 0, STEP, SIZE);
+                    }
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 1, 1, textureWidth - STEP - borderWidth, 0, SIZE - borderWidth, SIZE);
+                } else {
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE, SIZE);
                 }
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, textureWidth - borderWidth, 0, borderWidth, HEIGHT);
             }
-            case NONE -> {
-                // nothing to draw ^_^
-            }
+            // case NONE -> // nothing to draw ^_^
         }
         context.getMatrices().popMatrix();
 
@@ -135,9 +143,9 @@ public abstract class InGameHudMixin {
             Arm extrasSide = config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR ? config.getSide() : config.getSide().getOpposite();
 
             if (config.getAnchor().isTop() && config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
-                y += HEIGHT;
+                y += SIZE;
             } else if (extrasSide == Arm.RIGHT && config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL) {
-                x += WIDTH;
+                x += SIZE;
             }
 
             if (config.getDurabilityDisplay() == ArmorHudConfig.DurabilityDisplay.NUMERIC) {
@@ -146,11 +154,11 @@ public abstract class InGameHudMixin {
 
                 if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
                     if (!config.getAnchor().isTop()) y -= textHeight;
-                    context.drawCenteredTextWithShadow(this.getTextRenderer(), dura, x + (WIDTH / 2), y, ColorHelper.fullAlpha(stack.getItemBarColor()));
+                    context.drawCenteredTextWithShadow(this.getTextRenderer(), dura, x + (SIZE / 2), y, ColorHelper.fullAlpha(stack.getItemBarColor()));
                     if (config.getAnchor().isTop()) y += textHeight;
                 } else {
                     int textWidth = this.getTextRenderer().getWidth(dura) + 2;
-                    int textY = (HEIGHT - textHeight) / 2;
+                    int textY = (SIZE - textHeight) / 2;
 
                     if (extrasSide == Arm.LEFT) x -= textWidth;
                     context.drawTextWithShadow(this.getTextRenderer(), dura, x + 1, y + textY, ColorHelper.fullAlpha(stack.getItemBarColor()));
@@ -168,12 +176,12 @@ public abstract class InGameHudMixin {
                 if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
                     if (!config.getAnchor().isTop()) y -= WARNING_SIZE + 2;
 
-                    int warnX = (WIDTH - WARNING_SIZE) / 2;
+                    int warnX = (SIZE - WARNING_SIZE) / 2;
                     context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + warnX, y + 1, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
                 } else {
                     if (extrasSide == Arm.LEFT) x -= WARNING_SIZE + 2;
 
-                    int warnY = (HEIGHT - WARNING_SIZE) / 2;
+                    int warnY = (SIZE - WARNING_SIZE) / 2;
                     context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + 1, y + warnY, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
                 }
 
