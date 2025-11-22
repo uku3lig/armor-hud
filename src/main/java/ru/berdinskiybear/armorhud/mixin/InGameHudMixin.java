@@ -40,7 +40,7 @@ public abstract class InGameHudMixin {
     private Random random;
 
     @Unique
-    private static final Identifier WARNING_TEXTURE = Identifier.of("ukus-armor-hud", "warn.png");
+    private static final Identifier WARNING_TEXTURE = Identifier.of(MOD_ID, "warn.png");
 
     @Shadow
     protected abstract void renderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed);
@@ -50,7 +50,7 @@ public abstract class InGameHudMixin {
 
     @Inject(method = "renderHotbar", at = @At("TAIL"))
     public void renderArmorHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        Profilers.get().push("ukus-armor-hud");
+        Profilers.get().push(MOD_ID);
 
         // this was extracted to a different method to be able to return whenever I want
         // without messing up the profiler

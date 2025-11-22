@@ -27,8 +27,10 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public final class ArmorHudMod implements ModInitializer {
+    public static final String MOD_ID = "ukus-armor-hud";
+
     @Getter
-    private static final ConfigManager<ArmorHudConfig> manager = ConfigManager.createDefault(ArmorHudConfig.class, "ukus-armor-hud");
+    private static final ConfigManager<ArmorHudConfig> manager = ConfigManager.createDefault(ArmorHudConfig.class, MOD_ID);
 
     public static final int STEP = 20;
     public static final int SIZE = 22;
@@ -37,7 +39,7 @@ public final class ArmorHudMod implements ModInitializer {
     public static final int ATTACK_INDICATOR_OFFSET = 23;
     public static final int WARNING_SIZE = 8;
 
-    public static final Identifier ARMOR_BREAKING_SOUND = Identifier.of("ukus-armor-hud", "armor_breaking");
+    public static final SoundEvent ARMOR_BREAKING_SOUND = SoundEvent.of(Identifier.of(MOD_ID, "armor_breaking"));
 
     private static final List<ItemStack> lastStacks = new ArrayList<>(Collections.nCopies(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER.length, ItemStack.EMPTY));
 
@@ -175,9 +177,9 @@ public final class ArmorHudMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Ukutils.registerToggleBind(new KeyBinding("armorhud.keybind.toggle", GLFW.GLFW_KEY_UNKNOWN, KeyBinding.Category.create(Identifier.of("ukus-armor-hud", "key"))),
+        Ukutils.registerToggleBind(new KeyBinding("armorhud.keybind.toggle", GLFW.GLFW_KEY_UNKNOWN, KeyBinding.Category.create(Identifier.of(MOD_ID, "key"))),
                 () -> manager.getConfig().isEnabled(), b -> manager.getConfig().setEnabled(b), Text.translatable("armorhud.keybind.toggle.msg"));
 
-        Registry.register(Registries.SOUND_EVENT, ARMOR_BREAKING_SOUND, SoundEvent.of(ARMOR_BREAKING_SOUND));
+        Registry.register(Registries.SOUND_EVENT, ARMOR_BREAKING_SOUND.id(), ARMOR_BREAKING_SOUND);
     }
 }
