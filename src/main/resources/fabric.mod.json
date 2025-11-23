@@ -8,7 +8,6 @@
     "BerdinskiyBear",
     "uku"
   ],
-  "contributors": [],
   "contact": {
     "homepage": "https://github.com/uku3lig/armor-hud",
     "issues": "https://github.com/uku3lig/armor-hud/issues"
@@ -27,7 +26,6 @@
   "mixins": [
     "ukus-armor-hud.mixins.json"
   ],
-  "accessWidener": "ukus-armor-hud.accesswidener",
   "depends": {
     "fabricloader": ">=0.17",
     "minecraft": ">=1.21.9",

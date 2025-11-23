@@ -7,6 +7,7 @@
     "BossBarHudMixin",
     "InGameHudMixin",
     "MinecraftClientMixin",
+    "PlayerScreenHandlerAccessor",
     "SubtitlesHudMixin"
   ],
   "server": [],

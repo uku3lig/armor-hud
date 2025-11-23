@@ -12,10 +12,6 @@ repositories {
     }
 }
 
-loom {
-    accessWidenerPath = file("src/main/resources/ukus-armor-hud.accesswidener")
-}
-
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")

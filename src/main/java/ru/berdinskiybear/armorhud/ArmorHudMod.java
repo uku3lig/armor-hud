@@ -12,7 +12,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
@@ -22,6 +21,7 @@ import net.uku3lig.ukulib.utils.Ukutils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
+import ru.berdinskiybear.armorhud.mixin.PlayerScreenHandlerAccessor;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -41,7 +41,9 @@ public final class ArmorHudMod implements ModInitializer {
 
     public static final SoundEvent ARMOR_BREAKING_SOUND = SoundEvent.of(Identifier.of(MOD_ID, "armor_breaking"));
 
-    private static final List<ItemStack> lastStacks = new ArrayList<>(Collections.nCopies(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER.length, ItemStack.EMPTY));
+    public static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = PlayerScreenHandlerAccessor.getEQUIPMENT_SLOT_ORDER();
+
+    private static final List<ItemStack> lastStacks = new ArrayList<>(Collections.nCopies(EQUIPMENT_SLOT_ORDER.length, ItemStack.EMPTY));
 
     @Nullable
     public static PlayerEntity getCameraPlayer() {
@@ -137,7 +139,7 @@ public final class ArmorHudMod implements ModInitializer {
     }
 
     public static List<ItemStack> getArmorItems(PlayerEntity player) {
-        Stream<ItemStack> items = Arrays.stream(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER).map(player::getEquippedStack);
+        Stream<ItemStack> items = Arrays.stream(EQUIPMENT_SLOT_ORDER).map(player::getEquippedStack);
         items = switch (manager.getConfig().getWidgetShown()) {
             case ALWAYS -> items;
             case IF_ANY_PRESENT -> {
@@ -152,8 +154,8 @@ public final class ArmorHudMod implements ModInitializer {
     }
 
     public static boolean shouldPlayBreakSound(PlayerEntity player) {
-        for (int i = 0; i < PlayerScreenHandler.EQUIPMENT_SLOT_ORDER.length; i++) {
-            EquipmentSlot slot = PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[i];
+        for (int i = 0; i < EQUIPMENT_SLOT_ORDER.length; i++) {
+            EquipmentSlot slot = EQUIPMENT_SLOT_ORDER[i];
             ItemStack current = player.getEquippedStack(slot);
             ItemStack last = lastStacks.set(i, current);
             if (last.getDamage() != current.getDamage() && shouldShowWarning(current)) {

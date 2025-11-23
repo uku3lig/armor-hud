@@ -10,7 +10,6 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -47,6 +46,14 @@ public abstract class InGameHudMixin {
 
     @Shadow
     public abstract TextRenderer getTextRenderer();
+
+    @Shadow
+    @Final
+    private static Identifier HOTBAR_TEXTURE;
+
+    @Shadow
+    @Final
+    private static Identifier HOTBAR_OFFHAND_LEFT_TEXTURE;
 
     @Inject(method = "renderHotbar", at = @At("TAIL"))
     public void renderArmorHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
@@ -90,29 +97,29 @@ public abstract class InGameHudMixin {
 
         switch (config.getStyle()) {
             case HOTBAR -> {
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 0, 0, 0, 0, textureWidth - 3, SIZE);
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, textureWidth - 3, 0, 3, SIZE);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_TEXTURE, 182, 22, 0, 0, 0, 0, textureWidth - 3, SIZE);
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, textureWidth - 3, 0, 3, SIZE);
             }
             case ROUNDED_CORNERS -> {
                 if (armorItems.size() > 1) {
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, 3, SIZE);
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_TEXTURE, 182, 22, 3, 0, 3, 0, textureWidth - 6, SIZE);
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, SIZE - 3, 1, textureWidth - 3, 0, 3, SIZE);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, 3, SIZE);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_TEXTURE, 182, 22, 3, 0, 3, 0, textureWidth - 6, SIZE);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, SIZE - 3, 1, textureWidth - 3, 0, 3, SIZE);
                 } else {
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE, SIZE);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE, SIZE);
                 }
             }
             case ROUNDED -> {
                 if (armorItems.size() > 1) {
                     int borderWidth = (SIZE - STEP) / 2;
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE - borderWidth, SIZE);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE - borderWidth, SIZE);
                     // nothing happens if slots <= 2
                     for (int i = 1; i < armorItems.size() - 1; i++) {
-                        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, borderWidth + i * STEP, 0, STEP, SIZE);
+                        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, borderWidth + i * STEP, 0, STEP, SIZE);
                     }
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 1, 1, textureWidth - STEP - borderWidth, 0, SIZE - borderWidth, SIZE);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 1, 1, textureWidth - STEP - borderWidth, 0, SIZE - borderWidth, SIZE);
                 } else {
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, InGameHud.HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE, SIZE);
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE, SIZE);
                 }
             }
             // case NONE -> // nothing to draw ^_^
@@ -132,7 +139,7 @@ public abstract class InGameHudMixin {
             // here I blend in slot icons if so tells the current config
             if (config.isIconsShown() && config.getWidgetShown().shouldDrawEmptySlots() && stack.isEmpty()) {
                 int slotIndex = config.isReversed() ? 3 - i : i;
-                Identifier identifier = PlayerScreenHandler.EMPTY_ARMOR_SLOT_TEXTURES.get(PlayerScreenHandler.EQUIPMENT_SLOT_ORDER[slotIndex]);
+                Identifier identifier = PlayerScreenHandlerAccessor.getEMPTY_ARMOR_SLOT_TEXTURES().get(EQUIPMENT_SLOT_ORDER[slotIndex]);
                 context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, identifier, x + 3, y + 3, 16, 16);
             }
 
