@@ -155,7 +155,7 @@ public abstract class InGameHudMixin {
                 x += SIZE;
             }
 
-            if (config.getDurabilityDisplay() == ArmorHudConfig.DurabilityDisplay.NUMERIC) {
+            if (config.getDurabilityDisplay() == ArmorHudConfig.DurabilityDisplay.NUMERIC && !stack.isEmpty()) {
                 String dura = String.valueOf(stack.getMaxDamage() - stack.getDamage());
                 int textHeight = this.getTextRenderer().fontHeight;
 
