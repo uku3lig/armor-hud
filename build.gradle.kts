@@ -18,8 +18,8 @@ dependencies {
     mappings("net.fabricmc:yarn:${project.property("yarn_mappings")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
 
-    include(modImplementation(fabricApi.module("fabric-resource-loader-v0", project.property("fabric_api_version") as String))!!)
-    include(modImplementation(fabricApi.module("fabric-registry-sync-v0", project.property("fabric_api_version") as String))!!)
+    modImplementation(fabricApi.module("fabric-resource-loader-v0", project.property("fabric_api_version") as String))
+    modImplementation(fabricApi.module("fabric-registry-sync-v0", project.property("fabric_api_version") as String))
 
     modApi("net.uku3lig:ukulib:${project.property("ukulib_version")}")
 }
