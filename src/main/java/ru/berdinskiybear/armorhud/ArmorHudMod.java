@@ -75,15 +75,16 @@ public final class ArmorHudMod implements ModInitializer {
 
         final int addedHotbarOffset = switch (config.getOffhandSlotBehavior()) {
             case ALWAYS_IGNORE -> 0;
-            // FIXME probably need to account for both?
-            case ALWAYS_LEAVE_SPACE -> Math.max(OFFHAND_OFFSET, ATTACK_INDICATOR_OFFSET);
+            case ALWAYS_LEAVE_SPACE ->
+                    player.getMainArm() == config.getSide() ? ATTACK_INDICATOR_OFFSET : OFFHAND_OFFSET;
             case ADHERE -> {
-                if (player.getMainArm().getOpposite() == config.getSide()) {
-                    if (!player.getOffHandStack().isEmpty()) {
-                        yield OFFHAND_OFFSET;
-                    } else if (MinecraftClient.getInstance().options.getAttackIndicator().getValue() == AttackIndicator.HOTBAR) {
+                if (player.getMainArm() == config.getSide()) {
+                    if (MinecraftClient.getInstance().options.getAttackIndicator().getValue() == AttackIndicator.HOTBAR &&
+                            player.getAttackCooldownProgress(0) < 1) {
                         yield ATTACK_INDICATOR_OFFSET;
                     }
+                } else if (!player.getOffHandStack().isEmpty()) {
+                    yield OFFHAND_OFFSET;
                 }
 
                 yield 0;
