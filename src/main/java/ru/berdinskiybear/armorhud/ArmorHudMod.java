@@ -14,7 +14,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
-import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.uku3lig.ukulib.config.ConfigManager;
 import net.uku3lig.ukulib.utils.Ukutils;
@@ -64,8 +63,8 @@ public final class ArmorHudMod implements ModInitializer {
         // hotbar offset is relative to the bar, so when we are on the left it needs to be flipped
         // and on the right side, we need to flip the offset, except when anchored to the hotbar
         final int sideMultiplier, sideOffsetMultiplier;
-        if ((config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR && config.getSide() == Arm.LEFT)
-                || (config.getAnchor() != ArmorHudConfig.Anchor.HOTBAR && config.getSide() == Arm.RIGHT)) {
+        if ((config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR && config.getSide() == ArmorHudConfig.Side.LEFT)
+                || (config.getAnchor() != ArmorHudConfig.Anchor.HOTBAR && config.getSide() == ArmorHudConfig.Side.RIGHT)) {
             sideMultiplier = -1;
             sideOffsetMultiplier = -1;
         } else {
@@ -76,9 +75,9 @@ public final class ArmorHudMod implements ModInitializer {
         final int addedHotbarOffset = switch (config.getOffhandSlotBehavior()) {
             case ALWAYS_IGNORE -> 0;
             case ALWAYS_LEAVE_SPACE ->
-                    player.getMainArm() == config.getSide() ? ATTACK_INDICATOR_OFFSET : OFFHAND_OFFSET;
+                    player.getMainArm() == config.getSide().asArm() ? ATTACK_INDICATOR_OFFSET : OFFHAND_OFFSET;
             case ADHERE -> {
-                if (player.getMainArm() == config.getSide()) {
+                if (player.getMainArm() == config.getSide().asArm()) {
                     if (MinecraftClient.getInstance().options.getAttackIndicator().getValue() == AttackIndicator.HOTBAR &&
                             player.getAttackCooldownProgress(0) < 1) {
                         yield ATTACK_INDICATOR_OFFSET;

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.minecraft.util.Arm;
-import net.minecraft.util.TranslatableOption;
+import net.uku3lig.ukulib.config.option.StringTranslatable;
 
 import java.io.Serializable;
 
@@ -16,8 +16,7 @@ import java.io.Serializable;
 public class ArmorHudConfig implements Serializable {
     private boolean enabled = true;
     private Anchor anchor = Anchor.HOTBAR;
-    // doing a little trolling by using the arm class, it only has left right like i need
-    private Arm side = Arm.LEFT;
+    private Side side = Side.LEFT;
     private int offsetX = 0;
     private int offsetY = 0;
     private Style style = Style.HOTBAR;
@@ -38,13 +37,13 @@ public class ArmorHudConfig implements Serializable {
 
     @Getter
     @AllArgsConstructor
-    public enum Anchor implements TranslatableOption {
-        TOP_CENTER(0, "armorhud.option.topCenter"),
-        TOP(1, "armorhud.option.top"),
-        BOTTOM(2, "armorhud.option.bottom"),
-        HOTBAR(3, "armorhud.option.hotbar");
+    public enum Anchor implements StringTranslatable {
+        TOP_CENTER("top_center", "armorhud.option.topCenter"),
+        TOP("top", "armorhud.option.top"),
+        BOTTOM("bottom", "armorhud.option.bottom"),
+        HOTBAR("hotbar", "armorhud.option.hotbar");
 
-        private final int id;
+        private final String name;
         private final String translationKey;
 
         public boolean isTop() {
@@ -54,24 +53,42 @@ public class ArmorHudConfig implements Serializable {
 
     @Getter
     @AllArgsConstructor
-    public enum OffhandSlotBehavior implements TranslatableOption {
-        ALWAYS_IGNORE(0, "armorhud.option.alwaysIgnore"),
-        ADHERE(1, "armorhud.option.adhere"),
-        ALWAYS_LEAVE_SPACE(2, "armorhud.option.alwaysLeaveSpace");
+    public enum Side implements StringTranslatable {
+        LEFT("left", "options.mainHand.left"),
+        RIGHT("right", "options.mainHand.right");
 
-        private final int id;
+        private final String name;
+        private final String translationKey;
+
+        public Side getOpposite() {
+            return this == LEFT ? RIGHT : LEFT;
+        }
+
+        public Arm asArm() {
+            return this == LEFT ? Arm.LEFT : Arm.RIGHT;
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum OffhandSlotBehavior implements StringTranslatable {
+        ALWAYS_IGNORE("always_ignore", "armorhud.option.alwaysIgnore"),
+        ADHERE("adhere", "armorhud.option.adhere"),
+        ALWAYS_LEAVE_SPACE("always_leave_space", "armorhud.option.alwaysLeaveSpace");
+
+        private final String name;
         private final String translationKey;
     }
 
     @Getter
     @AllArgsConstructor
-    public enum WidgetShown implements TranslatableOption {
-        ALWAYS(0, "armorhud.option.always"),
-        IF_ANY_PRESENT(1, "armorhud.option.ifAnyPresent"),
-        NOT_EMPTY(2, "armorhud.option.notEmpty"),
-        DAMAGED_PIECES(3, "armorhud.option.damagedPieces");
+    public enum WidgetShown implements StringTranslatable {
+        ALWAYS("always", "armorhud.option.always"),
+        IF_ANY_PRESENT("if_any_present", "armorhud.option.ifAnyPresent"),
+        NOT_EMPTY("not_empty", "armorhud.option.notEmpty"),
+        DAMAGED_PIECES("damaged_pieces", "armorhud.option.damagedPieces");
 
-        private final int id;
+        private final String name;
         private final String translationKey;
 
         public boolean shouldDrawEmptySlots() {
@@ -81,33 +98,33 @@ public class ArmorHudConfig implements Serializable {
 
     @Getter
     @AllArgsConstructor
-    public enum Style implements TranslatableOption {
-        HOTBAR(0, "armorhud.option.hotbar"),
-        ROUNDED_CORNERS(1, "armorhud.option.roundedCorners"),
-        ROUNDED(2, "armorhud.option.rounded"),
-        NONE(3, "armorhud.option.none");
+    public enum Style implements StringTranslatable {
+        HOTBAR("hotbar", "armorhud.option.hotbar"),
+        ROUNDED_CORNERS("rounded_corners", "armorhud.option.roundedCorners"),
+        ROUNDED("rounded", "armorhud.option.rounded"),
+        NONE("none", "armorhud.option.none");
 
-        private final int id;
+        private final String name;
         private final String translationKey;
     }
 
     @Getter
     @AllArgsConstructor
-    public enum Orientation implements TranslatableOption {
-        HORIZONTAL(0, "armorhud.option.horizontal"),
-        VERTICAL(1, "armorhud.option.vertical");
+    public enum Orientation implements StringTranslatable {
+        HORIZONTAL("horizontal", "armorhud.option.horizontal"),
+        VERTICAL("vertical", "armorhud.option.vertical");
 
-        private final int id;
+        private final String name;
         private final String translationKey;
     }
 
     @Getter
     @AllArgsConstructor
-    public enum DurabilityDisplay implements TranslatableOption {
-        BAR(0, "armorhud.option.bar"),
-        NUMERIC(1, "armorhud.option.numeric");
+    public enum DurabilityDisplay implements StringTranslatable {
+        BAR("bar", "armorhud.option.bar"),
+        NUMERIC("numeric", "armorhud.option.numeric");
 
-        private final int id;
+        private final String name;
         private final String translationKey;
     }
 }

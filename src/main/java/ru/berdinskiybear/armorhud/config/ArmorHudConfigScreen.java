@@ -1,7 +1,6 @@
 package ru.berdinskiybear.armorhud.config;
 
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.Arm;
 import net.uku3lig.ukulib.config.option.CyclingOption;
 import net.uku3lig.ukulib.config.option.SliderOption;
 import net.uku3lig.ukulib.config.option.TypedInputOption;
@@ -21,7 +20,7 @@ public class ArmorHudConfigScreen extends AbstractConfigScreen<ArmorHudConfig> {
         return new WidgetCreator[]{
                 CyclingOption.ofBoolean("armorhud.option.enabled", config.isEnabled(), config::setEnabled),
                 CyclingOption.ofTranslatableEnum("armorhud.option.anchor", ArmorHudConfig.Anchor.class, config.getAnchor(), config::setAnchor),
-                CyclingOption.ofTranslatableEnum("armorhud.option.side", Arm.class, config.getSide(), config::setSide),
+                CyclingOption.ofTranslatableEnum("armorhud.option.side", ArmorHudConfig.Side.class, config.getSide(), config::setSide),
                 CyclingOption.ofTranslatableEnum("armorhud.option.style", ArmorHudConfig.Style.class, config.getStyle(), config::setStyle),
                 CyclingOption.ofTranslatableEnum("armorhud.option.orientation", ArmorHudConfig.Orientation.class, config.getOrientation(), config::setOrientation),
                 CyclingOption.ofTranslatableEnum("armorhud.option.widgetShown", ArmorHudConfig.WidgetShown.class, config.getWidgetShown(), config::setWidgetShown),

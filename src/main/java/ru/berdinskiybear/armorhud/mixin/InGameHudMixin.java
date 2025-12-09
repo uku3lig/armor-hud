@@ -10,7 +10,6 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
@@ -147,11 +146,11 @@ public abstract class InGameHudMixin {
             this.renderHotbarItem(context, x + 3, y + 3, tickCounter, player, stack, i + 1);
 
             // when anchoring to the hotbar, we want the warning to be on the other side to avoid clipping with the hotbar
-            Arm extrasSide = config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR ? config.getSide() : config.getSide().getOpposite();
+            ArmorHudConfig.Side extrasSide = config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR ? config.getSide() : config.getSide().getOpposite();
 
             if (config.getAnchor().isTop() && config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
                 y += SIZE;
-            } else if (extrasSide == Arm.RIGHT && config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL) {
+            } else if (extrasSide == ArmorHudConfig.Side.RIGHT && config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL) {
                 x += SIZE;
             }
 
@@ -167,9 +166,9 @@ public abstract class InGameHudMixin {
                     int textWidth = this.getTextRenderer().getWidth(dura) + 2;
                     int textY = (SIZE - textHeight) / 2;
 
-                    if (extrasSide == Arm.LEFT) x -= textWidth;
+                    if (extrasSide == ArmorHudConfig.Side.LEFT) x -= textWidth;
                     context.drawTextWithShadow(this.getTextRenderer(), dura, x + 1, y + textY, ColorHelper.fullAlpha(stack.getItemBarColor()));
-                    if (extrasSide == Arm.RIGHT) x += textWidth;
+                    if (extrasSide == ArmorHudConfig.Side.RIGHT) x += textWidth;
                 }
             }
 
@@ -186,7 +185,7 @@ public abstract class InGameHudMixin {
                     int warnX = (SIZE - WARNING_SIZE) / 2;
                     context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + warnX, y + 1, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
                 } else {
-                    if (extrasSide == Arm.LEFT) x -= WARNING_SIZE + 2;
+                    if (extrasSide == ArmorHudConfig.Side.LEFT) x -= WARNING_SIZE + 2;
 
                     int warnY = (SIZE - WARNING_SIZE) / 2;
                     context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + 1, y + warnY, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
@@ -200,7 +199,7 @@ public abstract class InGameHudMixin {
     public void calculateStatusEffectIconsOffset(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci, @Share("shift") LocalIntRef shiftRef) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled() || !config.isPushStatusEffectIcons() || config.getAnchor() != ArmorHudConfig.Anchor.TOP
-                || config.getSide() != Arm.RIGHT) return;
+                || config.getSide() != ArmorHudConfig.Side.RIGHT) return;
 
         PlayerEntity player = ArmorHudMod.getCameraPlayer();
         if (player == null) return;
