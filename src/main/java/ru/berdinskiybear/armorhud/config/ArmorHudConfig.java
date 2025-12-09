@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.minecraft.util.Arm;
+import net.minecraft.world.entity.HumanoidArm;
 import net.uku3lig.ukulib.config.option.StringTranslatable;
 
 import java.io.Serializable;
@@ -64,8 +64,8 @@ public class ArmorHudConfig implements Serializable {
             return this == LEFT ? RIGHT : LEFT;
         }
 
-        public Arm asArm() {
-            return this == LEFT ? Arm.LEFT : Arm.RIGHT;
+        public HumanoidArm asArm() {
+            return this == LEFT ? HumanoidArm.LEFT : HumanoidArm.RIGHT;
         }
     }
 

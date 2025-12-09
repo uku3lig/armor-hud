@@ -2,25 +2,25 @@ package ru.berdinskiybear.armorhud;
 
 import lombok.Getter;
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.option.AttackIndicator;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.math.Rect2i;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.AttackIndicatorStatus;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.uku3lig.ukulib.config.ConfigManager;
 import net.uku3lig.ukulib.utils.Ukutils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
-import ru.berdinskiybear.armorhud.mixin.PlayerScreenHandlerAccessor;
+import ru.berdinskiybear.armorhud.mixin.InventoryMenuAccessor;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -38,21 +38,21 @@ public final class ArmorHudMod implements ModInitializer {
     public static final int ATTACK_INDICATOR_OFFSET = 23;
     public static final int WARNING_SIZE = 8;
 
-    public static final SoundEvent ARMOR_BREAKING_SOUND = SoundEvent.of(Identifier.of(MOD_ID, "armor_breaking"));
+    public static final SoundEvent ARMOR_BREAKING_SOUND = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(MOD_ID, "armor_breaking"));
 
-    public static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = PlayerScreenHandlerAccessor.getEQUIPMENT_SLOT_ORDER();
+    public static final EquipmentSlot[] SLOT_IDS = InventoryMenuAccessor.getSLOT_IDS();
 
-    private static final List<ItemStack> lastStacks = new ArrayList<>(Collections.nCopies(EQUIPMENT_SLOT_ORDER.length, ItemStack.EMPTY));
+    private static final List<ItemStack> lastStacks = new ArrayList<>(Collections.nCopies(SLOT_IDS.length, ItemStack.EMPTY));
 
     @Nullable
-    public static PlayerEntity getCameraPlayer() {
-        return MinecraftClient.getInstance().getCameraEntity() instanceof PlayerEntity player ? player : null;
+    public static Player getCameraPlayer() {
+        return Minecraft.getInstance().getCameraEntity() instanceof Player player ? player : null;
     }
 
     /**
      * Returns the bounding box of the widget itself, <strong>excluding</strong> "external" information like warning icon
      */
-    public static Optional<Rect2i> getWidgetRect(DrawContext context, PlayerEntity player) {
+    public static Optional<Rect2i> getWidgetRect(GuiGraphics graphics, Player player) {
         ArmorHudConfig config = manager.getConfig();
         List<ItemStack> armorItems = getArmorItems(player);
 
@@ -78,11 +78,11 @@ public final class ArmorHudMod implements ModInitializer {
                     player.getMainArm() == config.getSide().asArm() ? ATTACK_INDICATOR_OFFSET : OFFHAND_OFFSET;
             case ADHERE -> {
                 if (player.getMainArm() == config.getSide().asArm()) {
-                    if (MinecraftClient.getInstance().options.getAttackIndicator().getValue() == AttackIndicator.HOTBAR &&
-                            player.getAttackCooldownProgress(0) < 1) {
+                    if (Minecraft.getInstance().options.attackIndicator().get() == AttackIndicatorStatus.HOTBAR &&
+                            player.getAttackStrengthScale(0) < 1) {
                         yield ATTACK_INDICATOR_OFFSET;
                     }
-                } else if (!player.getOffHandStack().isEmpty()) {
+                } else if (!player.getOffhandItem().isEmpty()) {
                     yield OFFHAND_OFFSET;
                 }
 
@@ -95,14 +95,14 @@ public final class ArmorHudMod implements ModInitializer {
         final int widgetHeight = config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL ? textureWidth : SIZE;
 
         final int armorWidgetX = config.getOffsetX() * sideMultiplier + switch (config.getAnchor()) {
-            case TOP_CENTER -> (context.getScaledWindowWidth() - widgetWidth) / 2;
-            case TOP, BOTTOM -> (widgetWidth - context.getScaledWindowWidth()) * sideOffsetMultiplier;
+            case TOP_CENTER -> (graphics.guiWidth() - widgetWidth) / 2;
+            case TOP, BOTTOM -> (widgetWidth - graphics.guiWidth()) * sideOffsetMultiplier;
             case HOTBAR ->
-                    context.getScaledWindowWidth() / 2 + ((HOTBAR_OFFSET + addedHotbarOffset) * sideMultiplier) + (widgetWidth * sideOffsetMultiplier);
+                    graphics.guiWidth() / 2 + ((HOTBAR_OFFSET + addedHotbarOffset) * sideMultiplier) + (widgetWidth * sideOffsetMultiplier);
         };
 
         final int armorWidgetY = switch (config.getAnchor()) {
-            case BOTTOM, HOTBAR -> context.getScaledWindowHeight() - widgetHeight - config.getOffsetY();
+            case BOTTOM, HOTBAR -> graphics.guiHeight() - widgetHeight - config.getOffsetY();
             case TOP, TOP_CENTER -> config.getOffsetY();
         };
 
@@ -112,10 +112,10 @@ public final class ArmorHudMod implements ModInitializer {
     /**
      * Returns the effective bounding box, <strong>including</strong> "external" information like warning icon
      */
-    public static Optional<Rect2i> getEffectiveWidgetRect(DrawContext context, PlayerEntity player) {
+    public static Optional<Rect2i> getEffectiveWidgetRect(GuiGraphics graphics, Player player) {
         ArmorHudConfig config = manager.getConfig();
 
-        return getWidgetRect(context, player).map(rect -> {
+        return getWidgetRect(graphics, player).map(rect -> {
             // TODO should probably extend the bbox horizontally too
             if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
                 int additionalHeight = 0;
@@ -125,7 +125,7 @@ public final class ArmorHudMod implements ModInitializer {
                 }
 
                 if (config.getDurabilityDisplay() == ArmorHudConfig.DurabilityDisplay.NUMERIC) {
-                    additionalHeight += MinecraftClient.getInstance().textRenderer.fontHeight;
+                    additionalHeight += Minecraft.getInstance().font.lineHeight;
                 }
 
                 rect.setHeight(rect.getHeight() + additionalHeight);
@@ -138,8 +138,8 @@ public final class ArmorHudMod implements ModInitializer {
         });
     }
 
-    public static List<ItemStack> getArmorItems(PlayerEntity player) {
-        Stream<ItemStack> items = Arrays.stream(EQUIPMENT_SLOT_ORDER).map(player::getEquippedStack);
+    public static List<ItemStack> getArmorItems(Player player) {
+        Stream<ItemStack> items = Arrays.stream(SLOT_IDS).map(player::getItemBySlot);
         items = switch (manager.getConfig().getWidgetShown()) {
             case ALWAYS -> items;
             case IF_ANY_PRESENT -> {
@@ -153,12 +153,12 @@ public final class ArmorHudMod implements ModInitializer {
         return items.toList();
     }
 
-    public static boolean shouldPlayBreakSound(PlayerEntity player) {
-        for (int i = 0; i < EQUIPMENT_SLOT_ORDER.length; i++) {
-            EquipmentSlot slot = EQUIPMENT_SLOT_ORDER[i];
-            ItemStack current = player.getEquippedStack(slot);
+    public static boolean shouldPlayBreakSound(Player player) {
+        for (int i = 0; i < SLOT_IDS.length; i++) {
+            EquipmentSlot slot = SLOT_IDS[i];
+            ItemStack current = player.getItemBySlot(slot);
             ItemStack last = lastStacks.set(i, current);
-            if (last.getDamage() != current.getDamage() && shouldShowWarning(current)) {
+            if (last.getDamageValue() != current.getDamageValue() && shouldShowWarning(current)) {
                 return true;
             }
         }
@@ -167,9 +167,9 @@ public final class ArmorHudMod implements ModInitializer {
     }
 
     public static boolean shouldShowWarning(ItemStack stack) {
-        if (stack.isEmpty() || !stack.isDamageable()) return false;
+        if (stack.isEmpty() || !stack.isDamageableItem()) return false;
 
-        final int damage = stack.getDamage();
+        final int damage = stack.getDamageValue();
         final int maxDamage = stack.getMaxDamage();
         double percentage = 1.0 - ((double) damage / maxDamage);
 
@@ -179,9 +179,9 @@ public final class ArmorHudMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Ukutils.registerToggleBind(new KeyBinding("armorhud.keybind.toggle", GLFW.GLFW_KEY_UNKNOWN, KeyBinding.Category.create(Identifier.of(MOD_ID, "key"))),
-                () -> manager.getConfig().isEnabled(), b -> manager.getConfig().setEnabled(b), Text.translatable("armorhud.keybind.toggle.msg"));
+        Ukutils.registerToggleBind(new KeyMapping("armorhud.keybind.toggle", GLFW.GLFW_KEY_UNKNOWN, KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "key"))),
+                () -> manager.getConfig().isEnabled(), b -> manager.getConfig().setEnabled(b), Component.translatable("armorhud.keybind.toggle.msg"));
 
-        Registry.register(Registries.SOUND_EVENT, ARMOR_BREAKING_SOUND.id(), ARMOR_BREAKING_SOUND);
+        Registry.register(BuiltInRegistries.SOUND_EVENT, ARMOR_BREAKING_SOUND.location(), ARMOR_BREAKING_SOUND);
     }
 }

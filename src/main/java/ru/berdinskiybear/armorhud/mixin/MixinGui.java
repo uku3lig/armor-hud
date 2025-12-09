@@ -2,19 +2,19 @@ package ru.berdinskiybear.armorhud.mixin;
 
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.util.math.Rect2i;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.profiler.Profilers;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,50 +31,50 @@ import java.util.Optional;
 
 import static ru.berdinskiybear.armorhud.ArmorHudMod.*;
 
-@Mixin(InGameHud.class)
-public abstract class InGameHudMixin {
+@Mixin(Gui.class)
+public abstract class MixinGui {
     @Shadow
     @Final
-    private Random random;
+    private RandomSource random;
 
     @Unique
-    private static final Identifier WARNING_TEXTURE = Identifier.of(MOD_ID, "warn.png");
+    private static final Identifier WARNING_TEXTURE = Identifier.fromNamespaceAndPath(MOD_ID, "warn.png");
 
     @Shadow
-    protected abstract void renderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed);
+    protected abstract void renderSlot(GuiGraphics graphics, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int seed);
 
     @Shadow
-    public abstract TextRenderer getTextRenderer();
-
-    @Shadow
-    @Final
-    private static Identifier HOTBAR_TEXTURE;
+    public abstract Font getFont();
 
     @Shadow
     @Final
-    private static Identifier HOTBAR_OFFHAND_LEFT_TEXTURE;
+    private static Identifier HOTBAR_SPRITE;
 
-    @Inject(method = "renderHotbar", at = @At("TAIL"))
-    public void renderArmorHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        Profilers.get().push(MOD_ID);
+    @Shadow
+    @Final
+    private static Identifier HOTBAR_OFFHAND_LEFT_SPRITE;
+
+    @Inject(method = "renderItemHotbar", at = @At("TAIL"))
+    public void renderArmorHud(GuiGraphics graphics, DeltaTracker tickCounter, CallbackInfo ci) {
+        Profiler.get().push(MOD_ID);
 
         // this was extracted to a different method to be able to return whenever I want
         // without messing up the profiler
-        drawArmorHud(context, tickCounter);
+        drawArmorHud(graphics, tickCounter);
 
         // pop this out of profiler
-        Profilers.get().pop();
+        Profiler.get().pop();
     }
 
     @Unique
-    private void drawArmorHud(DrawContext context, RenderTickCounter tickCounter) {
+    private void drawArmorHud(GuiGraphics graphics, DeltaTracker tickCounter) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled()) return;
 
-        PlayerEntity player = ArmorHudMod.getCameraPlayer();
+        Player player = ArmorHudMod.getCameraPlayer();
         if (player == null) return;
 
-        final Optional<Rect2i> rect = ArmorHudMod.getWidgetRect(context, player);
+        final Optional<Rect2i> rect = ArmorHudMod.getWidgetRect(graphics, player);
         // return if there is nothing to draw
         if (rect.isEmpty()) return;
 
@@ -87,43 +87,43 @@ public abstract class InGameHudMixin {
         final int textureWidth = SIZE + ((armorItems.size() - 1) * STEP);
 
         // here I draw the slots
-        context.getMatrices().pushMatrix();
-        context.getMatrices().translate(rect.get().getX(), rect.get().getY());
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(rect.get().getX(), rect.get().getY());
 
         if (config.getOrientation() == ArmorHudConfig.Orientation.VERTICAL) {
-            context.getMatrices().rotate(MathHelper.HALF_PI).translate(0, -SIZE);
+            graphics.pose().rotate(Mth.HALF_PI).translate(0, -SIZE);
         }
 
         switch (config.getStyle()) {
             case HOTBAR -> {
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_TEXTURE, 182, 22, 0, 0, 0, 0, textureWidth - 3, SIZE);
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_TEXTURE, 182, 22, 182 - 3, 0, textureWidth - 3, 0, 3, SIZE);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_SPRITE, 182, 22, 0, 0, 0, 0, textureWidth - 3, SIZE);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_SPRITE, 182, 22, 182 - 3, 0, textureWidth - 3, 0, 3, SIZE);
             }
             case ROUNDED_CORNERS -> {
                 if (armorItems.size() > 1) {
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, 3, SIZE);
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_TEXTURE, 182, 22, 3, 0, 3, 0, textureWidth - 6, SIZE);
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, SIZE - 3, 1, textureWidth - 3, 0, 3, SIZE);
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_SPRITE, 29, 24, 0, 1, 0, 0, 3, SIZE);
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_SPRITE, 182, 22, 3, 0, 3, 0, textureWidth - 6, SIZE);
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_SPRITE, 29, 24, SIZE - 3, 1, textureWidth - 3, 0, 3, SIZE);
                 } else {
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE, SIZE);
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_SPRITE, 29, 24, 0, 1, 0, 0, SIZE, SIZE);
                 }
             }
             case ROUNDED -> {
                 if (armorItems.size() > 1) {
                     int borderWidth = (SIZE - STEP) / 2;
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE - borderWidth, SIZE);
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_SPRITE, 29, 24, 0, 1, 0, 0, SIZE - borderWidth, SIZE);
                     // nothing happens if slots <= 2
                     for (int i = 1; i < armorItems.size() - 1; i++) {
-                        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, borderWidth, 1, borderWidth + i * STEP, 0, STEP, SIZE);
+                        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_SPRITE, 29, 24, borderWidth, 1, borderWidth + i * STEP, 0, STEP, SIZE);
                     }
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 1, 1, textureWidth - STEP - borderWidth, 0, SIZE - borderWidth, SIZE);
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_SPRITE, 29, 24, 1, 1, textureWidth - STEP - borderWidth, 0, SIZE - borderWidth, SIZE);
                 } else {
-                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_TEXTURE, 29, 24, 0, 1, 0, 0, SIZE, SIZE);
+                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR_OFFHAND_LEFT_SPRITE, 29, 24, 0, 1, 0, 0, SIZE, SIZE);
                 }
             }
             // case NONE -> // nothing to draw ^_^
         }
-        context.getMatrices().popMatrix();
+        graphics.pose().popMatrix();
 
         for (int i = 0; i < armorItems.size(); i++) {
             ItemStack stack = armorItems.get(i);
@@ -138,12 +138,12 @@ public abstract class InGameHudMixin {
             // here I blend in slot icons if so tells the current config
             if (config.isIconsShown() && config.getWidgetShown().shouldDrawEmptySlots() && stack.isEmpty()) {
                 int slotIndex = config.isReversed() ? 3 - i : i;
-                Identifier identifier = PlayerScreenHandlerAccessor.getEMPTY_ARMOR_SLOT_TEXTURES().get(EQUIPMENT_SLOT_ORDER[slotIndex]);
-                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, identifier, x + 3, y + 3, 16, 16);
+                Identifier identifier = InventoryMenuAccessor.getTEXTURE_EMPTY_SLOTS().get(SLOT_IDS[slotIndex]);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, identifier, x + 3, y + 3, 16, 16);
             }
 
             // here I draw the armour items
-            this.renderHotbarItem(context, x + 3, y + 3, tickCounter, player, stack, i + 1);
+            this.renderSlot(graphics, x + 3, y + 3, tickCounter, player, stack, i + 1);
 
             // when anchoring to the hotbar, we want the warning to be on the other side to avoid clipping with the hotbar
             ArmorHudConfig.Side extrasSide = config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR ? config.getSide() : config.getSide().getOpposite();
@@ -155,19 +155,19 @@ public abstract class InGameHudMixin {
             }
 
             if (config.getDurabilityDisplay() == ArmorHudConfig.DurabilityDisplay.NUMERIC && !stack.isEmpty()) {
-                String dura = String.valueOf(stack.getMaxDamage() - stack.getDamage());
-                int textHeight = this.getTextRenderer().fontHeight;
+                String dura = String.valueOf(stack.getMaxDamage() - stack.getDamageValue());
+                int textHeight = this.getFont().lineHeight;
 
                 if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
                     if (!config.getAnchor().isTop()) y -= textHeight;
-                    context.drawCenteredTextWithShadow(this.getTextRenderer(), dura, x + (SIZE / 2), y, ColorHelper.fullAlpha(stack.getItemBarColor()));
+                    graphics.drawCenteredString(this.getFont(), dura, x + (SIZE / 2), y, ARGB.opaque(stack.getBarColor()));
                     if (config.getAnchor().isTop()) y += textHeight;
                 } else {
-                    int textWidth = this.getTextRenderer().getWidth(dura) + 2;
+                    int textWidth = this.getFont().width(dura) + 2;
                     int textY = (SIZE - textHeight) / 2;
 
                     if (extrasSide == ArmorHudConfig.Side.LEFT) x -= textWidth;
-                    context.drawTextWithShadow(this.getTextRenderer(), dura, x + 1, y + textY, ColorHelper.fullAlpha(stack.getItemBarColor()));
+                    graphics.drawString(this.getFont(), dura, x + 1, y + textY, ARGB.opaque(stack.getBarColor()));
                     if (extrasSide == ArmorHudConfig.Side.RIGHT) x += textWidth;
                 }
             }
@@ -183,34 +183,34 @@ public abstract class InGameHudMixin {
                     if (!config.getAnchor().isTop()) y -= WARNING_SIZE + 2;
 
                     int warnX = (SIZE - WARNING_SIZE) / 2;
-                    context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + warnX, y + 1, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + warnX, y + 1, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
                 } else {
                     if (extrasSide == ArmorHudConfig.Side.LEFT) x -= WARNING_SIZE + 2;
 
                     int warnY = (SIZE - WARNING_SIZE) / 2;
-                    context.drawTexture(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + 1, y + warnY, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + 1, y + warnY, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
                 }
 
             }
         }
     }
 
-    @Inject(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))
-    public void calculateStatusEffectIconsOffset(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci, @Share("shift") LocalIntRef shiftRef) {
+    @Inject(method = "renderEffects", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))
+    public void calculateStatusEffectIconsOffset(GuiGraphics graphics, DeltaTracker tickCounter, CallbackInfo ci, @Share("shift") LocalIntRef shiftRef) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled() || !config.isPushStatusEffectIcons() || config.getAnchor() != ArmorHudConfig.Anchor.TOP
                 || config.getSide() != ArmorHudConfig.Side.RIGHT) return;
 
-        PlayerEntity player = ArmorHudMod.getCameraPlayer();
+        Player player = ArmorHudMod.getCameraPlayer();
         if (player == null) return;
 
-        Optional<Rect2i> rect = ArmorHudMod.getEffectiveWidgetRect(context, player);
+        Optional<Rect2i> rect = ArmorHudMod.getEffectiveWidgetRect(graphics, player);
         if (rect.isEmpty()) return;
 
         shiftRef.set(rect.get().getY() + rect.get().getHeight());
     }
 
-    @ModifyVariable(method = "renderStatusEffectOverlay", at = @At(value = "STORE"), ordinal = 3)
+    @ModifyVariable(method = "renderEffects", at = @At(value = "STORE"), ordinal = 3)
     public int statusEffectIconsOffset(int y, @Share("shift") LocalIntRef shiftRef) {
         return y + shiftRef.get();
     }
