@@ -13,12 +13,9 @@ repositories {
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
     mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
-
-    modImplementation(fabricApi.module("fabric-registry-sync-v0", project.property("fabric_api_version") as String))
 
     modApi("net.uku3lig:ukulib:${project.property("ukulib_version")}")
 }

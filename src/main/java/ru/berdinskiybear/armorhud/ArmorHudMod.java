@@ -7,8 +7,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
@@ -181,7 +179,5 @@ public final class ArmorHudMod implements ModInitializer {
     public void onInitialize() {
         Ukutils.registerToggleBind(new KeyMapping("armorhud.keybind.toggle", GLFW.GLFW_KEY_UNKNOWN, KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "key"))),
                 () -> manager.getConfig().isEnabled(), b -> manager.getConfig().setEnabled(b), Component.translatable("armorhud.keybind.toggle.msg"));
-
-        Registry.register(BuiltInRegistries.SOUND_EVENT, ARMOR_BREAKING_SOUND.location(), ARMOR_BREAKING_SOUND);
     }
 }
