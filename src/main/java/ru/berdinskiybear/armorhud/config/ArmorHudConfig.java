@@ -122,7 +122,8 @@ public class ArmorHudConfig implements Serializable {
     @AllArgsConstructor
     public enum DurabilityDisplay implements StringTranslatable {
         BAR("bar", "armorhud.option.bar"),
-        NUMERIC("numeric", "armorhud.option.numeric");
+        NUMERIC("numeric", "armorhud.option.numeric"),
+        PERCENTAGE("percentage", "armorhud.option.percentage");
 
         private final String name;
         private final String translationKey;

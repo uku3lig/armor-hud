@@ -122,7 +122,7 @@ public final class ArmorHudMod implements ModInitializer {
                     additionalHeight += WARNING_SIZE + 2 + (config.getWarningBobIntensity() / 2);
                 }
 
-                if (config.getDurabilityDisplay() == ArmorHudConfig.DurabilityDisplay.NUMERIC) {
+                if (config.getDurabilityDisplay() != ArmorHudConfig.DurabilityDisplay.BAR) {
                     additionalHeight += Minecraft.getInstance().font.lineHeight;
                 }
 

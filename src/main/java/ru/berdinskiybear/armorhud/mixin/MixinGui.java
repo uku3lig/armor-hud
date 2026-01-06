@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import ru.berdinskiybear.armorhud.ArmorHudMod;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 
 import java.util.List;
@@ -68,18 +67,18 @@ public abstract class MixinGui {
 
     @Unique
     private void drawArmorHud(GuiGraphics graphics, DeltaTracker tickCounter) {
-        ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
+        ArmorHudConfig config = getManager().getConfig();
         if (!config.isEnabled()) return;
 
-        Player player = ArmorHudMod.getCameraPlayer();
+        Player player = getCameraPlayer();
         if (player == null) return;
 
-        final Optional<Rect2i> rect = ArmorHudMod.getWidgetRect(graphics, player);
+        final Optional<Rect2i> rect = getWidgetRect(graphics, player);
         // return if there is nothing to draw
         if (rect.isEmpty()) return;
 
         // fetch armor items
-        List<ItemStack> armorItems = ArmorHudMod.getArmorItems(player);
+        List<ItemStack> armorItems = getArmorItems(player);
         if (config.isReversed()) {
             armorItems = armorItems.reversed();
         }
@@ -154,8 +153,15 @@ public abstract class MixinGui {
                 x += SIZE;
             }
 
-            if (config.getDurabilityDisplay() == ArmorHudConfig.DurabilityDisplay.NUMERIC && !stack.isEmpty()) {
-                String dura = String.valueOf(stack.getMaxDamage() - stack.getDamageValue());
+            if (config.getDurabilityDisplay() != ArmorHudConfig.DurabilityDisplay.BAR && !stack.isEmpty()) {
+                String dura = switch (config.getDurabilityDisplay()) {
+                    case NUMERIC -> String.valueOf(stack.getMaxDamage() - stack.getDamageValue());
+                    case PERCENTAGE -> {
+                        double percentage = 1 - (double) stack.getDamageValue() / stack.getMaxDamage();
+                        yield (int) Math.floor(percentage * 100) + "%";
+                    }
+                    case BAR -> throw new IllegalStateException("unreachable");
+                };
                 int textHeight = this.getFont().lineHeight;
 
                 if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
@@ -173,7 +179,7 @@ public abstract class MixinGui {
             }
 
             // here I draw warning icons if necessary
-            if (config.isWarningShown() && ArmorHudMod.shouldShowWarning(stack)) {
+            if (config.isWarningShown() && shouldShowWarning(stack)) {
                 if (config.getWarningBobIntensity() != 0) {
                     int intensity = config.getWarningBobIntensity();
                     y += (int) (this.random.nextInt(intensity) - Math.ceil(intensity / 2F));
@@ -197,14 +203,14 @@ public abstract class MixinGui {
 
     @Inject(method = "renderEffects", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))
     public void calculateStatusEffectIconsOffset(GuiGraphics graphics, DeltaTracker tickCounter, CallbackInfo ci, @Share("shift") LocalIntRef shiftRef) {
-        ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
+        ArmorHudConfig config = getManager().getConfig();
         if (!config.isEnabled() || !config.isPushStatusEffectIcons() || config.getAnchor() != ArmorHudConfig.Anchor.TOP
                 || config.getSide() != ArmorHudConfig.Side.RIGHT) return;
 
-        Player player = ArmorHudMod.getCameraPlayer();
+        Player player = getCameraPlayer();
         if (player == null) return;
 
-        Optional<Rect2i> rect = ArmorHudMod.getEffectiveWidgetRect(graphics, player);
+        Optional<Rect2i> rect = getEffectiveWidgetRect(graphics, player);
         if (rect.isEmpty()) return;
 
         shiftRef.set(rect.get().getY() + rect.get().getHeight());
