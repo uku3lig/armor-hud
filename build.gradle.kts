@@ -10,6 +10,12 @@ repositories {
     maven {
         url = uri("https://maven.uku3lig.net/releases")
     }
+    maven {
+        url = uri("https://api.modrinth.com/maven")
+        content {
+            includeGroup("maven.modrinth")
+        }
+    }
 }
 
 dependencies {
@@ -18,6 +24,8 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
 
     modApi("net.uku3lig:ukulib:${project.property("ukulib_version")}")
+
+    modCompileOnly("maven.modrinth:bedrockify:${project.property("bedrockify_version")}")
 }
 
 base {

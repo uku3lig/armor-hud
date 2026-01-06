@@ -1,6 +1,7 @@
 package ru.berdinskiybear.armorhud;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.KeyMapping;
@@ -17,12 +18,14 @@ import net.uku3lig.ukulib.config.ConfigManager;
 import net.uku3lig.ukulib.utils.Ukutils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import ru.berdinskiybear.armorhud.compat.BedrockifyCompat;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 import ru.berdinskiybear.armorhud.mixin.InventoryMenuAccessor;
 
 import java.util.*;
 import java.util.stream.Stream;
 
+@Slf4j
 public final class ArmorHudMod implements ModInitializer {
     public static final String MOD_ID = "ukus-armor-hud";
 
@@ -41,6 +44,18 @@ public final class ArmorHudMod implements ModInitializer {
     public static final EquipmentSlot[] SLOT_IDS = InventoryMenuAccessor.getSLOT_IDS();
 
     private static final List<ItemStack> lastStacks = new ArrayList<>(Collections.nCopies(SLOT_IDS.length, ItemStack.EMPTY));
+
+    @Getter
+    private static BedrockifyCompat bedrockifyCompat = null;
+
+    static {
+        try {
+            Class.forName("me.juancarloscp52.bedrockify.client.BedrockifyClient");
+            bedrockifyCompat = new BedrockifyCompat();
+        } catch (Exception e) {
+            log.debug("Not enabling Bedrockify compatibility");
+        }
+    }
 
     @Nullable
     public static Player getCameraPlayer() {
@@ -100,7 +115,10 @@ public final class ArmorHudMod implements ModInitializer {
         };
 
         final int armorWidgetY = switch (config.getAnchor()) {
-            case BOTTOM, HOTBAR -> graphics.guiHeight() - widgetHeight - config.getOffsetY();
+            case BOTTOM, HOTBAR -> {
+                int bedrockifyOffset = bedrockifyCompat != null ? bedrockifyCompat.screenSafeArea() : 0;
+                yield graphics.guiHeight() - widgetHeight - config.getOffsetY() - bedrockifyOffset;
+            }
             case TOP, TOP_CENTER -> config.getOffsetY();
         };
 
