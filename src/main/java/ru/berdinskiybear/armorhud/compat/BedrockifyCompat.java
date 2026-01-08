@@ -1,13 +1,14 @@
 package ru.berdinskiybear.armorhud.compat;
 
-import me.juancarloscp52.bedrockify.client.BedrockifyClient;
-
+// TODO
 public class BedrockifyCompat {
     public float hudOpacity() {
-        return BedrockifyClient.getInstance().hudOpacity.getHudOpacity(false);
+        // return BedrockifyClient.getInstance().hudOpacity.getHudOpacity(false);
+        return 1;
     }
 
     public int screenSafeArea() {
-        return BedrockifyClient.getInstance().settings.getScreenSafeArea();
+        // return BedrockifyClient.getInstance().settings.getScreenSafeArea();
+        return 0;
     }
 }

@@ -1,5 +1,5 @@
 plugins {
-    id("net.fabricmc.fabric-loom-remap") version "1.14-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.14-SNAPSHOT"
     id("io.freefair.lombok") version "9.1.0"
 }
 
@@ -11,6 +11,9 @@ repositories {
         url = uri("https://maven.uku3lig.net/releases")
     }
     maven {
+        url = uri("https://maven.uku3lig.net/snapshots") // TODO remove
+    }
+    maven {
         url = uri("https://api.modrinth.com/maven")
         content {
             includeGroup("maven.modrinth")
@@ -20,12 +23,11 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
-    mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
+    implementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
 
-    modApi("net.uku3lig:ukulib:${project.property("ukulib_version")}")
+    api("net.uku3lig:ukulib-fabric:${project.property("ukulib_version")}")
 
-    modCompileOnly("maven.modrinth:bedrockify:${project.property("bedrockify_version")}")
+    // compileOnly("maven.modrinth:bedrockify:${project.property("bedrockify_version")}")
 }
 
 base {
@@ -33,8 +35,8 @@ base {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.processResources {
