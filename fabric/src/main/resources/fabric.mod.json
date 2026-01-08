@@ -19,8 +19,8 @@
   "icon": "assets/ukus-armor-hud/icon.png",
   "environment": "client",
   "entrypoints": {
-    "main": [
-      "ru.berdinskiybear.armorhud.ArmorHudMod"
+    "client": [
+      "ru.berdinskiybear.armorhud.fabric.ArmorHudFabric"
     ],
     "ukulib": [
       "ru.berdinskiybear.armorhud.config.UkulibIntegration"

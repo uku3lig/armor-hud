@@ -219,7 +219,7 @@ public abstract class MixinGui {
         shiftRef.set(rect.get().getY() + rect.get().getHeight());
     }
 
-    @ModifyVariable(method = "renderEffects", at = @At(value = "STORE"), ordinal = 3)
+    @ModifyVariable(method = "renderEffects", at = @At(value = "STORE"), name = "y")
     public int statusEffectIconsOffset(int y, @Share("shift") LocalIntRef shiftRef) {
         return y + shiftRef.get();
     }

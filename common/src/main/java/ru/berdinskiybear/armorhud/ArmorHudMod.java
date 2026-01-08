@@ -2,7 +2,6 @@ package ru.berdinskiybear.armorhud;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -26,7 +25,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @Slf4j
-public final class ArmorHudMod implements ModInitializer {
+public final class ArmorHudMod {
     public static final String MOD_ID = "ukus-armor-hud";
 
     @Getter
@@ -193,8 +192,7 @@ public final class ArmorHudMod implements ModInitializer {
                 || maxDamage - damage <= manager.getConfig().getMinDurabilityValue();
     }
 
-    @Override
-    public void onInitialize() {
+    public static void onInitialize() {
         Ukutils.registerToggleBind(new KeyMapping("armorhud.keybind.toggle", GLFW.GLFW_KEY_UNKNOWN, KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "key"))),
                 () -> manager.getConfig().isEnabled(), b -> manager.getConfig().setEnabled(b), Component.translatable("armorhud.keybind.toggle.msg"));
     }

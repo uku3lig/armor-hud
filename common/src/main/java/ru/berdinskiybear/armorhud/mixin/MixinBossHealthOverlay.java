@@ -32,7 +32,7 @@ public class MixinBossHealthOverlay {
         offsetRef.set(rect.get().getY() + rect.get().getHeight());
     }
 
-    @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 1)
+    @ModifyVariable(method = "render", at = @At("STORE"), name = "yOffset")
     public int pushBossBars(int y, @Share("offset") LocalIntRef offsetRef) {
         return y + offsetRef.get();
     }
