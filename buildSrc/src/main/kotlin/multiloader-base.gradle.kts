@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "net.uku3lig"
-version = BuildConfig.createVersionString(project)
+version = BuildConfig.createVersionString()
 
 base {
     archivesName = rootProject.name + "-" + project.name
