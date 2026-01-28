@@ -156,7 +156,7 @@ public abstract class MixinGui {
                 x += SIZE;
             }
 
-            if (config.getDurabilityDisplay() != ArmorHudConfig.DurabilityDisplay.BAR && !stack.isEmpty()) {
+            if (config.getDurabilityDisplay() != ArmorHudConfig.DurabilityDisplay.BAR && !stack.isEmpty() && stack.isDamageableItem()) {
                 String dura = switch (config.getDurabilityDisplay()) {
                     case NUMERIC -> String.valueOf(stack.getMaxDamage() - stack.getDamageValue());
                     case PERCENTAGE -> {
