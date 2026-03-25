@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
@@ -41,7 +41,7 @@ public abstract class MixinGui {
     private static final Identifier WARNING_TEXTURE = Identifier.fromNamespaceAndPath(MOD_ID, "warn.png");
 
     @Shadow
-    protected abstract void renderSlot(GuiGraphics graphics, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int seed);
+    protected abstract void extractSlot(GuiGraphicsExtractor graphics, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int seed);
 
     @Shadow
     public abstract Font getFont();
@@ -54,8 +54,8 @@ public abstract class MixinGui {
     @Final
     private static Identifier HOTBAR_OFFHAND_LEFT_SPRITE;
 
-    @Inject(method = "renderItemHotbar", at = @At("TAIL"))
-    public void renderArmorHud(GuiGraphics graphics, DeltaTracker tickCounter, CallbackInfo ci) {
+    @Inject(method = "extractItemHotbar", at = @At("TAIL"))
+    public void renderArmorHud(GuiGraphicsExtractor graphics, DeltaTracker tickCounter, CallbackInfo ci) {
         Profiler.get().push(MOD_ID);
 
         // this was extracted to a different method to be able to return whenever I want
@@ -67,7 +67,7 @@ public abstract class MixinGui {
     }
 
     @Unique
-    private void drawArmorHud(GuiGraphics graphics, DeltaTracker tickCounter) {
+    private void drawArmorHud(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
         ArmorHudConfig config = getManager().getConfig();
         if (!config.isEnabled()) return;
 
@@ -145,7 +145,7 @@ public abstract class MixinGui {
             }
 
             // here I draw the armour items
-            this.renderSlot(graphics, x + 3, y + 3, tickCounter, player, stack, i + 1);
+            this.extractSlot(graphics, x + 3, y + 3, tickCounter, player, stack, i + 1);
 
             // when anchoring to the hotbar, we want the warning to be on the other side to avoid clipping with the hotbar
             ArmorHudConfig.Side extrasSide = config.getAnchor() == ArmorHudConfig.Anchor.HOTBAR ? config.getSide() : config.getSide().getOpposite();
@@ -169,14 +169,14 @@ public abstract class MixinGui {
 
                 if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
                     if (!config.getAnchor().isTop()) y -= textHeight;
-                    graphics.drawCenteredString(this.getFont(), dura, x + (SIZE / 2), y, ARGB.opaque(stack.getBarColor()));
+                    graphics.centeredText(this.getFont(), dura, x + (SIZE / 2), y, ARGB.opaque(stack.getBarColor()));
                     if (config.getAnchor().isTop()) y += textHeight;
                 } else {
                     int textWidth = this.getFont().width(dura) + 2;
                     int textY = (SIZE - textHeight) / 2;
 
                     if (extrasSide == ArmorHudConfig.Side.LEFT) x -= textWidth;
-                    graphics.drawString(this.getFont(), dura, x + 1, y + textY, ARGB.opaque(stack.getBarColor()));
+                    graphics.text(this.getFont(), dura, x + 1, y + textY, ARGB.opaque(stack.getBarColor()));
                     if (extrasSide == ArmorHudConfig.Side.RIGHT) x += textWidth;
                 }
             }
@@ -204,8 +204,8 @@ public abstract class MixinGui {
         }
     }
 
-    @Inject(method = "renderEffects", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))
-    public void calculateStatusEffectIconsOffset(GuiGraphics graphics, DeltaTracker tickCounter, CallbackInfo ci, @Share("shift") LocalIntRef shiftRef) {
+    @Inject(method = "extractEffects", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))
+    public void calculateStatusEffectIconsOffset(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci, @Share("shift") LocalIntRef shiftRef) {
         ArmorHudConfig config = getManager().getConfig();
         if (!config.isEnabled() || !config.isPushStatusEffectIcons() || config.getAnchor() != ArmorHudConfig.Anchor.TOP
                 || config.getSide() != ArmorHudConfig.Side.RIGHT) return;
@@ -219,7 +219,7 @@ public abstract class MixinGui {
         shiftRef.set(rect.get().getY() + rect.get().getHeight());
     }
 
-    @ModifyVariable(method = "renderEffects", at = @At(value = "STORE"), name = "y")
+    @ModifyVariable(method = "extractEffects", at = @At(value = "STORE"), name = "y")
     public int statusEffectIconsOffset(int y, @Share("shift") LocalIntRef shiftRef) {
         return y + shiftRef.get();
     }

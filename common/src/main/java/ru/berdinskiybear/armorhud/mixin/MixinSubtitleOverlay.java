@@ -2,7 +2,7 @@ package ru.berdinskiybear.armorhud.mixin;
 
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.SubtitleOverlay;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.entity.player.Player;
@@ -18,8 +18,8 @@ import java.util.Optional;
 @Mixin(SubtitleOverlay.class)
 public class MixinSubtitleOverlay {
     // doing the calculation here allows to calculate only once, since there is one translate call for each subtitle
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;width(Ljava/lang/String;)I", ordinal = 3))
-    public void calculateOffset(GuiGraphics graphics, CallbackInfo ci, @Share("offset") LocalIntRef offsetRef) {
+    @Inject(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;width(Ljava/lang/String;)I", ordinal = 3))
+    public void calculateOffset(GuiGraphicsExtractor graphics, CallbackInfo ci, @Share("offset") LocalIntRef offsetRef) {
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled() || !config.isPushSubtitles() || config.getAnchor() != ArmorHudConfig.Anchor.BOTTOM
                 || config.getSide() != ArmorHudConfig.Side.RIGHT) return;
@@ -33,8 +33,8 @@ public class MixinSubtitleOverlay {
         offsetRef.set(Math.max(rect.get().getHeight() - 25, 0));
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;", shift = At.Shift.AFTER, remap = false))
-    public void offset(GuiGraphics graphics, CallbackInfo ci, @Share("offset") LocalIntRef offsetRef) {
+    @Inject(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix3x2fStack;translate(FF)Lorg/joml/Matrix3x2f;", shift = At.Shift.AFTER, remap = false))
+    public void offset(GuiGraphicsExtractor graphics, CallbackInfo ci, @Share("offset") LocalIntRef offsetRef) {
         graphics.pose().translate(0.0F, -offsetRef.get());
     }
 }

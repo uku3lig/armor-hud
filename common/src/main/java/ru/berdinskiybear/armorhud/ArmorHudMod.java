@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -64,7 +64,7 @@ public final class ArmorHudMod {
     /**
      * Returns the bounding box of the widget itself, <strong>excluding</strong> "external" information like warning icon
      */
-    public static Optional<Rect2i> getWidgetRect(GuiGraphics graphics, Player player) {
+    public static Optional<Rect2i> getWidgetRect(GuiGraphicsExtractor graphics, Player player) {
         ArmorHudConfig config = manager.getConfig();
         List<ItemStack> armorItems = getArmorItems(player);
 
@@ -127,7 +127,7 @@ public final class ArmorHudMod {
     /**
      * Returns the effective bounding box, <strong>including</strong> "external" information like warning icon
      */
-    public static Optional<Rect2i> getEffectiveWidgetRect(GuiGraphics graphics, Player player) {
+    public static Optional<Rect2i> getEffectiveWidgetRect(GuiGraphicsExtractor graphics, Player player) {
         ArmorHudConfig config = manager.getConfig();
 
         return getWidgetRect(graphics, player).map(rect -> {
