@@ -21,9 +21,11 @@ tasks.withType<GenerateModuleMetadata>().configureEach {
     enabled = false
 }
 
+tasks.jar {
+    destinationDirectory.set(file(rootProject.layout.buildDirectory).resolve("libs"))
+}
+
 repositories {
     mavenCentral()
     maven { url = uri("https://maven.uku3lig.net/releases") }
-    // TODO remove
-    maven { url = uri("https://maven.uku3lig.net/snapshots") }
 }
