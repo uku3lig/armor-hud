@@ -4,8 +4,8 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
@@ -31,8 +31,8 @@ import java.util.Optional;
 
 import static ru.berdinskiybear.armorhud.ArmorHudMod.*;
 
-@Mixin(Gui.class)
-public abstract class MixinGui {
+@Mixin(Hud.class)
+public abstract class MixinHud {
     @Shadow
     @Final
     private RandomSource random;

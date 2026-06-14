@@ -6,7 +6,7 @@
   "client": [
     "InventoryMenuAccessor",
     "MixinBossHealthOverlay",
-    "MixinGui",
+    "MixinHud",
     "MixinMinecraft",
     "MixinSubtitleOverlay"
   ],
