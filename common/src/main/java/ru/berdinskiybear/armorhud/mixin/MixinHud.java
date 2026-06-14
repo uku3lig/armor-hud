@@ -160,6 +160,7 @@ public abstract class MixinHud {
                 String dura = switch (config.getDurabilityDisplay()) {
                     case NUMERIC -> String.valueOf(stack.getMaxDamage() - stack.getDamageValue());
                     case PERCENTAGE -> {
+                        if (stack.getDamageValue() == 0) yield "";
                         double percentage = 1 - (double) stack.getDamageValue() / stack.getMaxDamage();
                         yield (int) Math.floor(percentage * 100) + "%";
                     }
