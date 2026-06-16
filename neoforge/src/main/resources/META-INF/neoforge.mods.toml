@@ -14,21 +14,21 @@ description = "This mod adds a minimalistic vanilla-like widget that shows your 
 [[dependencies.ukus_armor_hud]]
 modId = "minecraft"
 type = "required"
-versionRange = "[26.1-snapshot,)"
+versionRange = "[26.2,)"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.ukus_armor_hud]]
 modId = "neoforge"
 type = "required"
-versionRange = "[26.1.0.0-alpha,)"
+versionRange = "[26.2.0.0-beta,)"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.ukus_armor_hud]]
 modId = "ukulib"
 type = "required"
-versionRange = "[2.0.0-alpha,)"
+versionRange = "[2.1.0,3)"
 ordering = "NONE"
 side = "CLIENT"
 
