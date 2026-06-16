@@ -94,7 +94,7 @@ public abstract class MixinHud {
             graphics.pose().rotate(Mth.HALF_PI).translate(0, -SIZE);
         }
 
-        int color = ArmorHudMod.getBedrockifyCompat() != null ? ARGB.white(ArmorHudMod.getBedrockifyCompat().hudOpacity()) : 0xFFFFFFFF;
+        int color = ARGB.white(ArmorHudMod.getModCompat().hudOpacity());
 
         switch (config.getStyle()) {
             case HOTBAR -> {

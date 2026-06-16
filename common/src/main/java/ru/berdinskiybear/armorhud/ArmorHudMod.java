@@ -1,6 +1,7 @@
 package ru.berdinskiybear.armorhud;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.KeyMapping;
@@ -17,7 +18,7 @@ import net.uku3lig.ukulib.config.ConfigManager;
 import net.uku3lig.ukulib.utils.Ukutils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
-import ru.berdinskiybear.armorhud.compat.BedrockifyCompat;
+import ru.berdinskiybear.armorhud.compat.ModCompat;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 import ru.berdinskiybear.armorhud.mixin.InventoryMenuAccessor;
 
@@ -44,17 +45,8 @@ public final class ArmorHudMod {
 
     private static final List<ItemStack> lastStacks = new ArrayList<>(Collections.nCopies(SLOT_IDS.length, ItemStack.EMPTY));
 
-    @Getter
-    private static BedrockifyCompat bedrockifyCompat = null;
-
-    static {
-        try {
-            Class.forName("me.juancarloscp52.bedrockify.client.BedrockifyClient");
-            bedrockifyCompat = new BedrockifyCompat();
-        } catch (Exception e) {
-            log.debug("Not enabling Bedrockify compatibility");
-        }
-    }
+    @Getter @Setter
+    private static ModCompat modCompat = new ModCompat.NoOpModCompat();
 
     @Nullable
     public static Player getCameraPlayer() {
@@ -114,10 +106,8 @@ public final class ArmorHudMod {
         };
 
         final int armorWidgetY = switch (config.getAnchor()) {
-            case BOTTOM, HOTBAR -> {
-                int bedrockifyOffset = bedrockifyCompat != null ? bedrockifyCompat.screenSafeArea() : 0;
-                yield graphics.guiHeight() - widgetHeight - config.getOffsetY() - bedrockifyOffset;
-            }
+            case BOTTOM, HOTBAR ->
+                    graphics.guiHeight() - widgetHeight - config.getOffsetY() - modCompat.screenSafeArea();
             case TOP, TOP_CENTER -> config.getOffsetY();
         };
 

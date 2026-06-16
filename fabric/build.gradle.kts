@@ -29,7 +29,7 @@ dependencies {
 
     api("net.uku3lig:ukulib-fabric:${BuildConfig.UKULIB_VERSION}")
 
-    // compileOnly("maven.modrinth:bedrockify:${project.property("bedrockify_version")}")
+    compileOnly("maven.modrinth:bedrockify:${BuildConfig.BEDROCKIFY_VERSION}")
 }
 
 modrinth {
