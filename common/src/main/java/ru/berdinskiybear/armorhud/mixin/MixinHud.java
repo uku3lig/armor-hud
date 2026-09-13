@@ -41,7 +41,7 @@ public abstract class MixinHud {
     private static final Identifier WARNING_TEXTURE = Identifier.fromNamespaceAndPath(MOD_ID, "warn.png");
 
     @Shadow
-    protected abstract void extractSlot(GuiGraphicsExtractor graphics, int x, int y, DeltaTracker tickCounter, Player player, ItemStack stack, int seed);
+    protected abstract void extractSlot(GuiGraphicsExtractor graphics, int x, int y, DeltaTracker deltaTracker, Player player, ItemStack stack, int seed);
 
     @Shadow
     public abstract Font getFont();
@@ -55,12 +55,12 @@ public abstract class MixinHud {
     private static Identifier HOTBAR_OFFHAND_LEFT_SPRITE;
 
     @Inject(method = "extractItemHotbar", at = @At("TAIL"))
-    public void renderArmorHud(GuiGraphicsExtractor graphics, DeltaTracker tickCounter, CallbackInfo ci) {
+    public void renderArmorHud(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         Profiler.get().push(MOD_ID);
 
         // this was extracted to a different method to be able to return whenever I want
         // without messing up the profiler
-        drawArmorHud(graphics, tickCounter);
+        drawArmorHud(graphics, deltaTracker);
 
         // pop this out of profiler
         Profiler.get().pop();

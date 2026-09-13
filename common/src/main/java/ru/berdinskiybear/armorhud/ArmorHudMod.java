@@ -1,5 +1,6 @@
 package ru.berdinskiybear.armorhud;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,6 @@ import net.minecraft.world.item.ItemStack;
 import net.uku3lig.ukulib.config.ConfigManager;
 import net.uku3lig.ukulib.utils.Ukutils;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 import ru.berdinskiybear.armorhud.compat.ModCompat;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 import ru.berdinskiybear.armorhud.mixin.InventoryMenuAccessor;
@@ -183,7 +183,7 @@ public final class ArmorHudMod {
     }
 
     public static void onInitialize() {
-        Ukutils.registerToggleBind(new KeyMapping("armorhud.keybind.toggle", GLFW.GLFW_KEY_UNKNOWN, KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "key"))),
+        Ukutils.registerToggleBind(new KeyMapping("armorhud.keybind.toggle", InputConstants.UNKNOWN.getValue(), KeyMapping.Category.register(Identifier.fromNamespaceAndPath(MOD_ID, "key"))),
                 () -> manager.getConfig().isEnabled(), b -> manager.getConfig().setEnabled(b), Component.translatable("armorhud.keybind.toggle.msg"));
     }
 }
