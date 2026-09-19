@@ -103,7 +103,7 @@ public final class ArmorHudMod {
 
         final int armorWidgetX = config.getOffsetX() * sideMultiplier + switch (config.getAnchor()) {
             case TOP_CENTER -> (graphics.guiWidth() - widgetWidth) / 2;
-            case TOP, BOTTOM -> (widgetWidth - graphics.guiWidth()) * sideOffsetMultiplier;
+            case TOP, VERT_CENTER, BOTTOM -> (widgetWidth - graphics.guiWidth()) * sideOffsetMultiplier;
             case HOTBAR ->
                     graphics.guiWidth() / 2 + ((HOTBAR_OFFSET + addedHotbarOffset) * sideMultiplier) + (widgetWidth * sideOffsetMultiplier);
         };
@@ -112,6 +112,7 @@ public final class ArmorHudMod {
             case BOTTOM, HOTBAR ->
                     graphics.guiHeight() - widgetHeight - config.getOffsetY() - modCompat.screenSafeArea();
             case TOP, TOP_CENTER -> config.getOffsetY();
+            case VERT_CENTER -> (graphics.guiHeight() - widgetHeight) / 2 + config.getOffsetY();
         };
 
         return Optional.of(new Rect2i(armorWidgetX, armorWidgetY, widgetWidth, widgetHeight));

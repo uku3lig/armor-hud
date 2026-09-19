@@ -11,6 +11,7 @@ inside curly brackets). If any of the Configuration parameters are missing their
     * Possible values:
         * `"TOP_CENTER"` - widget is placed at the top in the middle.
         * `"TOP"` - widget is placed at the upper corner on the preferred side.
+        * `"CENTER"` - widget is vertically centered on the preferred side.
         * `"BOTTOM"` - widget is placed at the bottom corner on the preferred side.
         * `"HOTBAR"` - widget is placed to the side from your hotbar.
     * Default value: `true`
@@ -27,6 +28,7 @@ inside curly brackets). If any of the Configuration parameters are missing their
     * Default value: `0`
 1. ##### `"offsetY"`
     * Offsets widget position on a vertical axis, otherwise the same as X offset.
+      With the center anchor, positive values move down and negative values move up.
     * Default value: `0`
 1. ##### `"style"`
     * Widget slot style defines how slots are drawn on the screen. If widget slots look weird

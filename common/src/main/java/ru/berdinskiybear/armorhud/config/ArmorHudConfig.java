@@ -42,6 +42,7 @@ public class ArmorHudConfig implements Serializable {
     public enum Anchor implements StringTranslatable {
         TOP_CENTER("top_center", "armorhud.option.topCenter"),
         TOP("top", "armorhud.option.top"),
+        VERT_CENTER("vertical_center", "armorhud.option.verticalCenter"),
         BOTTOM("bottom", "armorhud.option.bottom"),
         HOTBAR("hotbar", "armorhud.option.hotbar");
 
