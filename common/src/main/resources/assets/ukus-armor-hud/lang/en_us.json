@@ -1,6 +1,9 @@
 {
   "key.category.ukus-armor-hud.key": "uku's Armor Hud",
   "armorhud.config": "uku's Armor Hud config",
+  "armorhud.config.style": "Style",
+  "armorhud.config.position": "Position",
+  "armorhud.config.warning": "Warning",
   "armorhud.option.enabled": "Enabled",
   "armorhud.option.anchor": "Anchor",
   "armorhud.option.side": "Side",
