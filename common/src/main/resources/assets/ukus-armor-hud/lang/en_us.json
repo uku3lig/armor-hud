@@ -43,6 +43,7 @@
   "armorhud.option.bar": "Bar",
   "armorhud.option.numeric": "Numeric",
   "armorhud.option.percentage": "Percentage",
+  "armorhud.option.offhandDura": "Show Offhand Durability",
   "armorhud.keybind.toggle": "Toggle Armor Hud",
   "armorhud.keybind.toggle.msg": "Armor Hud toggled",
   "armorhud.subtitle.armorBreaking": "Armor Breaking"

@@ -13,6 +13,7 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.profiling.Profiler;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
@@ -157,15 +158,7 @@ public abstract class MixinHud {
             }
 
             if (config.getDurabilityDisplay() != ArmorHudConfig.DurabilityDisplay.BAR && !stack.isEmpty() && stack.isDamageableItem()) {
-                String dura = switch (config.getDurabilityDisplay()) {
-                    case NUMERIC -> String.valueOf(stack.getMaxDamage() - stack.getDamageValue());
-                    case PERCENTAGE -> {
-                        if (stack.getDamageValue() == 0) yield "";
-                        double percentage = 1 - (double) stack.getDamageValue() / stack.getMaxDamage();
-                        yield (int) Math.floor(percentage * 100) + "%";
-                    }
-                    case BAR -> throw new IllegalStateException("unreachable");
-                };
+                String dura = ArmorHudMod.getDurabilityText(stack);
                 int textHeight = this.getFont().lineHeight;
 
                 if (config.getOrientation() == ArmorHudConfig.Orientation.HORIZONTAL) {
@@ -203,6 +196,32 @@ public abstract class MixinHud {
 
             }
         }
+
+        ItemStack offhand = player.getOffhandItem();
+        if (offhand.isDamageableItem()) {
+            // offhand slot is offset 7 pixels from the hotbar
+            int x = player.getMainArm() == HumanoidArm.RIGHT
+                    ? (graphics.guiWidth() / 2) - 91 - 29
+                    : (graphics.guiWidth() / 2) + 91 + 7;
+            int y = graphics.guiHeight() - SIZE - this.getFont().lineHeight;
+
+            if (config.getDurabilityDisplay() != ArmorHudConfig.DurabilityDisplay.BAR && config.isOffHandDurability()) {
+                String dura = ArmorHudMod.getDurabilityText(offhand);
+                graphics.centeredText(this.getFont(), dura, x + (SIZE / 2), y, ARGB.opaque(offhand.getBarColor()));
+            }
+
+            if (config.isWarningShown() && shouldShowWarning(offhand)) {
+                if (config.getWarningBobIntensity() != 0) {
+                    int intensity = config.getWarningBobIntensity();
+                    y += (int) (this.random.nextInt(intensity) - Math.ceil(intensity / 2F));
+                }
+
+                y -= WARNING_SIZE + 2;
+                int warnX = (SIZE - WARNING_SIZE) / 2;
+                graphics.blit(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + warnX, y + 1, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
+            }
+        }
+
     }
 
     @Inject(method = "extractEffects", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))

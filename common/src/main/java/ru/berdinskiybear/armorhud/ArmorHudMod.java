@@ -171,6 +171,18 @@ public final class ArmorHudMod {
         return false;
     }
 
+    public static String getDurabilityText(ItemStack stack) {
+        return switch (manager.getConfig().getDurabilityDisplay()) {
+            case NUMERIC -> String.valueOf(stack.getMaxDamage() - stack.getDamageValue());
+            case PERCENTAGE -> {
+                if (stack.getDamageValue() == 0) yield "";
+                double percentage = 1 - (double) stack.getDamageValue() / stack.getMaxDamage();
+                yield (int) Math.floor(percentage * 100) + "%";
+            }
+            case BAR -> throw new IllegalStateException("cannot display durability text when display is set to BAR");
+        };
+    }
+
     public static boolean shouldShowWarning(ItemStack stack) {
         if (stack.isEmpty() || !stack.isDamageableItem()) return false;
 
