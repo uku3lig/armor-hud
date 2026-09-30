@@ -75,7 +75,6 @@ public abstract class MixinHud {
         Player player = getCameraPlayer();
         if (player == null) return;
 
-        // FIXME: there is stuff to draw for main hand/offhand!
         final Optional<Rect2i> rect = getWidgetRect(graphics, player);
         // return if there is nothing to draw
         if (rect.isEmpty()) return;
@@ -194,9 +193,19 @@ public abstract class MixinHud {
                     int warnY = (SIZE - WARNING_SIZE) / 2;
                     graphics.blit(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + 1, y + warnY, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
                 }
-
             }
         }
+    }
+
+    // this part is separate from the rest so that the text can properly render above all the gui elements
+    // plus this allows for main/offhand things to be rendered even if the armor widget is empty
+    @Inject(method = "extractHotbarAndDecorations", at = @At("TAIL"))
+    public void renderMainHandCounter(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        ArmorHudConfig config = getManager().getConfig();
+        if (!config.isEnabled()) return;
+
+        Player player = getCameraPlayer();
+        if (player == null) return;
 
         ItemStack offhand = player.getOffhandItem();
         if (offhand.isDamageableItem()) {
@@ -222,16 +231,6 @@ public abstract class MixinHud {
                 graphics.blit(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + warnX, y + 1, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
             }
         }
-    }
-
-    // this part is separate from the rest so that the text can properly render above all the gui elements
-    @Inject(method = "extractHotbarAndDecorations", at = @At("TAIL"))
-    public void renderMainHandCounter(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        ArmorHudConfig config = getManager().getConfig();
-        if (!config.isEnabled()) return;
-
-        Player player = getCameraPlayer();
-        if (player == null) return;
 
         ItemStack mainHand = player.getMainHandItem();
         if (mainHand.isDamageableItem() && config.isMainHandDurability() && config.getDurabilityDisplay() != ArmorHudConfig.DurabilityDisplay.BAR) {
