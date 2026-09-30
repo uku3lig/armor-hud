@@ -25,6 +25,7 @@ public class ArmorHudConfig implements Serializable {
     private OffhandSlotBehavior offhandSlotBehavior = OffhandSlotBehavior.ADHERE;
     private DurabilityDisplay durabilityDisplay = DurabilityDisplay.BAR;
     private boolean offHandDurability = true;
+    private boolean mainHandDurability = false;
     private boolean pushBossbars = true;
     private boolean pushStatusEffectIcons = true;
     private boolean pushSubtitles = true;

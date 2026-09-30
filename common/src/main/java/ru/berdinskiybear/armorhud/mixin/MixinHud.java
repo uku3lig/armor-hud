@@ -75,6 +75,7 @@ public abstract class MixinHud {
         Player player = getCameraPlayer();
         if (player == null) return;
 
+        // FIXME: there is stuff to draw for main hand/offhand!
         final Optional<Rect2i> rect = getWidgetRect(graphics, player);
         // return if there is nothing to draw
         if (rect.isEmpty()) return;
@@ -221,7 +222,32 @@ public abstract class MixinHud {
                 graphics.blit(RenderPipelines.GUI_TEXTURED, WARNING_TEXTURE, x + warnX, y + 1, 0, 0, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE, WARNING_SIZE);
             }
         }
+    }
 
+    // this part is separate from the rest so that the text can properly render above all the gui elements
+    @Inject(method = "extractHotbarAndDecorations", at = @At("TAIL"))
+    public void renderMainHandCounter(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        ArmorHudConfig config = getManager().getConfig();
+        if (!config.isEnabled()) return;
+
+        Player player = getCameraPlayer();
+        if (player == null) return;
+
+        ItemStack mainHand = player.getMainHandItem();
+        if (mainHand.isDamageableItem() && config.isMainHandDurability() && config.getDurabilityDisplay() != ArmorHudConfig.DurabilityDisplay.BAR) {
+            // same as offhand but on the other side
+            int x = (graphics.guiWidth() / 2) - 91 + player.getInventory().getSelectedSlot() * 20 + (SIZE / 2);
+            int y = graphics.guiHeight() - SIZE - 1;
+
+            String dura = ArmorHudMod.getDurabilityText(mainHand);
+            int textX = x - (this.getFont().width(dura) / 2);
+            // draw text with an outline for better visibility
+            graphics.text(this.getFont(), dura, textX + 1, y, ARGB.black(255), false);
+            graphics.text(this.getFont(), dura, textX - 1, y, ARGB.black(255), false);
+            graphics.text(this.getFont(), dura, textX, y + 1, ARGB.black(255), false);
+            graphics.text(this.getFont(), dura, textX, y - 1, ARGB.black(255), false);
+            graphics.text(this.getFont(), dura, textX, y, ARGB.opaque(mainHand.getBarColor()), false);
+        }
     }
 
     @Inject(method = "extractEffects", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;"))

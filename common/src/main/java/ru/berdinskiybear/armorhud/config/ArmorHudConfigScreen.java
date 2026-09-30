@@ -46,6 +46,7 @@ public class ArmorHudConfigScreen extends TabbedConfigScreen<ArmorHudConfig> {
                     CyclingOption.ofBoolean("armorhud.option.reversed", config.isReversed(), config::setReversed),
                     CyclingOption.ofBoolean("armorhud.option.showIcons", config.isIconsShown(), config::setIconsShown),
                     CyclingOption.ofBoolean("armorhud.option.offhandDura", config.isOffHandDurability(), config::setOffHandDurability),
+                    CyclingOption.ofBoolean("armorhud.option.mainHandDura", config.isMainHandDurability(), config::setMainHandDurability),
             };
         }
     }
