@@ -33,7 +33,7 @@ public class MixinBossHealthOverlay {
     }
 
     @ModifyVariable(method = "extractRenderState", at = @At("STORE"), name = "yOffset")
-    public int pushBossBars(int y, @Share("offset") LocalIntRef offsetRef) {
-        return y + offsetRef.get();
+    public int pushBossBars(int yOffset, @Share("offset") LocalIntRef offsetRef) {
+        return yOffset + offsetRef.get();
     }
 }

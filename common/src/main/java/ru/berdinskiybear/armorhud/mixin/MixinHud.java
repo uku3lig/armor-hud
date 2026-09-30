@@ -42,7 +42,7 @@ public abstract class MixinHud {
     private static final Identifier WARNING_TEXTURE = Identifier.fromNamespaceAndPath(MOD_ID, "warn.png");
 
     @Shadow
-    protected abstract void extractSlot(GuiGraphicsExtractor graphics, int x, int y, DeltaTracker deltaTracker, Player player, ItemStack stack, int seed);
+    protected abstract void extractSlot(GuiGraphicsExtractor graphics, int x, int y, DeltaTracker deltaTracker, Player player, ItemStack itemStack, int seed);
 
     @Shadow
     public abstract Font getFont();
@@ -61,14 +61,14 @@ public abstract class MixinHud {
 
         // this was extracted to a different method to be able to return whenever I want
         // without messing up the profiler
-        drawArmorHud(graphics, deltaTracker);
+        ukus_armor_hud$drawArmorHud(graphics, deltaTracker);
 
         // pop this out of profiler
         Profiler.get().pop();
     }
 
     @Unique
-    private void drawArmorHud(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
+    private void ukus_armor_hud$drawArmorHud(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
         ArmorHudConfig config = getManager().getConfig();
         if (!config.isEnabled()) return;
 
