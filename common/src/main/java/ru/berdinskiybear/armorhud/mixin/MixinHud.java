@@ -208,14 +208,14 @@ public abstract class MixinHud {
         if (player == null) return;
 
         ItemStack offhand = player.getOffhandItem();
-        if (offhand.isDamageableItem()) {
+        if (offhand.isDamageableItem() && config.isOffHandDurability()) {
             // offhand slot is offset 7 pixels from the hotbar
             int x = player.getMainArm() == HumanoidArm.RIGHT
                     ? (graphics.guiWidth() / 2) - 91 - 29
                     : (graphics.guiWidth() / 2) + 91 + 7;
             int y = graphics.guiHeight() - SIZE - this.getFont().lineHeight;
 
-            if (config.getDurabilityDisplay() != ArmorHudConfig.DurabilityDisplay.BAR && config.isOffHandDurability()) {
+            if (config.getDurabilityDisplay() != ArmorHudConfig.DurabilityDisplay.BAR) {
                 String dura = ArmorHudMod.getDurabilityText(offhand);
                 graphics.centeredText(this.getFont(), dura, x + (SIZE / 2), y, ARGB.opaque(offhand.getBarColor()));
             }
