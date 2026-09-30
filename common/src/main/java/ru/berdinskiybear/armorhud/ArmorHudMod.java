@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.uku3lig.ukulib.config.ConfigManager;
 import net.uku3lig.ukulib.utils.Ukutils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import ru.berdinskiybear.armorhud.compat.ModCompat;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
@@ -42,10 +43,12 @@ public final class ArmorHudMod {
     public static final SoundEvent ARMOR_BREAKING_SOUND = SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(MOD_ID, "armor_breaking"));
 
     public static final EquipmentSlot[] SLOT_IDS = InventoryMenuAccessor.getSLOT_IDS();
+    public static final EquipmentSlot[] ALL_SLOTS = ArrayUtils.addAll(SLOT_IDS, EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND);
 
-    private static final List<ItemStack> lastStacks = new ArrayList<>(Collections.nCopies(SLOT_IDS.length, ItemStack.EMPTY));
+    private static final List<ItemStack> lastStacks = new ArrayList<>(Collections.nCopies(ALL_SLOTS.length, ItemStack.EMPTY));
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private static ModCompat modCompat = new ModCompat.NoOpModCompat();
 
     @Nullable
@@ -159,11 +162,20 @@ public final class ArmorHudMod {
     }
 
     public static boolean shouldPlayBreakSound(Player player) {
-        for (int i = 0; i < SLOT_IDS.length; i++) {
-            EquipmentSlot slot = SLOT_IDS[i];
+        for (int i = 0; i < ALL_SLOTS.length; i++) {
+            EquipmentSlot slot = ALL_SLOTS[i];
             ItemStack current = player.getItemBySlot(slot);
             ItemStack last = lastStacks.set(i, current);
-            if (last.getDamageValue() != current.getDamageValue() && shouldShowWarning(current)) {
+            // hack: we want the equipping of an item to be loud if it's damaged;
+            // however this is annoying for main hand, therefore we try to mitigate it by checking if we just didn't switch slots (different item types)
+            // but this can be "circumvented" by changing to a damaged item of the same type, and a warning sound will play
+            // it's a bit ugly, but it should do the job well enough, the edge case should be rare enough where it doesn't really matter
+            boolean shouldPlaySound = last.getDamageValue() != current.getDamageValue() && shouldShowWarning(current);
+            boolean isMainHandAndDifferentThanLast = slot == EquipmentSlot.MAINHAND && !last.is(current.getItem());
+            boolean isArmor = slot != EquipmentSlot.MAINHAND && slot != EquipmentSlot.OFFHAND;
+            boolean shouldPlayMainHand = slot == EquipmentSlot.MAINHAND && manager.getConfig().isMainHandDurability();
+            boolean shouldPlayOffHand = slot == EquipmentSlot.OFFHAND && manager.getConfig().isOffHandDurability();
+            if (shouldPlaySound && !isMainHandAndDifferentThanLast && (isArmor || shouldPlayMainHand || shouldPlayOffHand)) {
                 return true;
             }
         }
