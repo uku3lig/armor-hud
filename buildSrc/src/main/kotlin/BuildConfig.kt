@@ -5,7 +5,7 @@ object BuildConfig {
     const val UKULIB_VERSION: String = "2.2.0+26.3"
     const val BEDROCKIFY_VERSION: String = "1.11.8+mc26.2"
 
-    const val MOD_VERSION: String = "0.13.0"
+    const val MOD_VERSION: String = "0.14.0"
 
     const val MODRINTH_PROJECT_ID: String = "wF189hn9"
 
