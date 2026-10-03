@@ -27,7 +27,8 @@
     ]
   },
   "mixins": [
-    "ukus-armor-hud.mixins.json"
+    "ukus-armor-hud.mixins.json",
+    "ukus-armor-hud-fabric.mixins.json"
   ],
   "depends": {
     "minecraft": ">=26.3",
