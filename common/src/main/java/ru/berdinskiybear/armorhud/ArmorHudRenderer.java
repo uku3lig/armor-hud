@@ -176,10 +176,11 @@ public class ArmorHudRenderer {
             int x = player.getMainArm() == HumanoidArm.RIGHT
                     ? (graphics.guiWidth() / 2) - 91 - 29
                     : (graphics.guiWidth() / 2) + 91 + 7;
-            int y = graphics.guiHeight() - SIZE - font.lineHeight;
+            int y = graphics.guiHeight() - SIZE;
 
             if (config.getDurabilityDisplay() != ArmorHudConfig.DurabilityDisplay.BAR) {
                 String dura = ArmorHudMod.getDurabilityText(offhand);
+                y -= font.lineHeight;
                 graphics.centeredText(font, dura, x + (SIZE / 2), y, ARGB.opaque(offhand.getBarColor()));
             }
 
