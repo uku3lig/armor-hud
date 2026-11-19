@@ -28,6 +28,8 @@ public class ArmorHudRenderer {
     public static final Identifier WARNING_TEXTURE = Identifier.fromNamespaceAndPath(MOD_ID, "warn.png");
 
     public static void drawArmorHud(GuiGraphicsExtractor graphics, DeltaTracker tickCounter) {
+        if (Minecraft.getInstance().gui.hud.isHidden()) return;
+
         ArmorHudConfig config = ArmorHudMod.getManager().getConfig();
         if (!config.isEnabled()) return;
 
@@ -161,6 +163,8 @@ public class ArmorHudRenderer {
     // this part is separate from the rest so that the text can properly render above all the gui elements
     // plus this allows for main/offhand things to be rendered even if the armor widget is empty
     public static void renderMainAndOffhand(GuiGraphicsExtractor graphics) {
+        if (Minecraft.getInstance().gui.hud.isHidden()) return;
+
         ArmorHudConfig config = getManager().getConfig();
         if (!config.isEnabled()) return;
 
