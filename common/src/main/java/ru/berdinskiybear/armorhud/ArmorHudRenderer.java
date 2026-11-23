@@ -12,6 +12,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import ru.berdinskiybear.armorhud.config.ArmorHudConfig;
 import ru.berdinskiybear.armorhud.mixin.HudAccessor;
 import ru.berdinskiybear.armorhud.mixin.InventoryMenuAccessor;
@@ -34,7 +35,7 @@ public class ArmorHudRenderer {
         if (!config.isEnabled()) return;
 
         Player player = ArmorHudMod.getCameraPlayer();
-        if (player == null) return;
+        if (player == null || player.gameMode() == GameType.SPECTATOR) return;
 
         final Optional<Rect2i> rect = ArmorHudMod.getWidgetRect(graphics, player);
         // return if there is nothing to draw
@@ -169,7 +170,7 @@ public class ArmorHudRenderer {
         if (!config.isEnabled()) return;
 
         Player player = getCameraPlayer();
-        if (player == null) return;
+        if (player == null || player.gameMode() == GameType.SPECTATOR) return;
 
         Font font = Minecraft.getInstance().font;
         HudAccessor hud = (HudAccessor) Minecraft.getInstance().gui.hud;
